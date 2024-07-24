@@ -1,4 +1,4 @@
-package com.rodolfobrandao.coremastermarket.dtos.pdv;
+package com.rodolfobrandao.coremastermarket.repositories;
 
 import com.rodolfobrandao.coremastermarket.entities.pdv.Venda;
 import org.springframework.data.jpa.repository.JpaRepository;
