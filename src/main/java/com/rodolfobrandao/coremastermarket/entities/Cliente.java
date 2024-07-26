@@ -62,7 +62,7 @@ public class Cliente {
     @Column(name = "data_alteracao", nullable = false)
     private LocalDate dataAlteracao;
 
-    @Column(name = "data_exclusao", nullable = false)
+    @Column(name = "data_exclusao")
     private LocalDate dataExclusao;
 
     @Column(length = 255)
@@ -80,7 +80,10 @@ public class Cliente {
     @Column(name = "data_vencimento", nullable = false)
     private LocalDate dataVencimento;
 
-    public Cliente(String nome, LocalDate dataNascimento, String rua, String bairro, String numero, String cpfCnpj, String rgIe, String telefone1, String telefone2, boolean emitirNota, String email, String cep, String cidade, String estado, LocalDate dataCadastro, LocalDate dataAlteracao, LocalDate dataExclusao, boolean ativo, String observacao, double limiteCredito, LocalDate dataPagamento, LocalDate dataVencimento) {
+    @Column(name = "data_fechamento_fatura", nullable = false)
+    private LocalDate dataFechamentoFatura;
+
+    public Cliente(String nome, LocalDate dataNascimento, String rua, String bairro, String numero, String cpfCnpj, String rgIe, String telefone1, String telefone2, boolean emitirNota, String email, String cep, String cidade, String estado, LocalDate dataCadastro, LocalDate dataAlteracao, LocalDate dataExclusao, boolean ativo, String observacao, double limiteCredito, LocalDate dataPagamento, LocalDate dataVencimento, LocalDate dataFechamentoFatura) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.rua = rua;
@@ -103,6 +106,7 @@ public class Cliente {
         this.limiteCredito = limiteCredito;
         this.dataPagamento = dataPagamento;
         this.dataVencimento = dataVencimento;
+        this.dataFechamentoFatura = dataFechamentoFatura;
     }
 
     public Cliente() {

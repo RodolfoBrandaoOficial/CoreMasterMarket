@@ -1,6 +1,10 @@
 package com.rodolfobrandao.coremastermarket.repositories;
 
+import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import com.rodolfobrandao.coremastermarket.entities.pdv.Produto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +20,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
      * @return
      */
     Optional<Produto> findByCodigoBarras(String codigoBarras);
+
+    Page<Cliente> findAll(Specification<Cliente> spec, Pageable pageable);
 }

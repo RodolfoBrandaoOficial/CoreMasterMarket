@@ -2,6 +2,7 @@ package com.rodolfobrandao.coremastermarket.entities.pdv;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,7 +28,7 @@ public class VendaItem {
     private Long idVenda;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_venda, insertable = false, updatable = false")
+    @JoinColumn(name = "id_venda", insertable = false, updatable = false)
     @JsonIgnore
     @JsonProperty("venda")
     private Venda venda;
@@ -36,6 +37,11 @@ public class VendaItem {
     @JoinColumn(name = "id_produto", insertable = false, updatable = false, referencedColumnName = "id")
     @JsonProperty("produto")
     private Produto produto;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_cliente", insertable = false, updatable = false, referencedColumnName = "id")
+    @JsonProperty("cliente")
+    private Cliente cliente;
 
     public VendaItem(BigDecimal quantidade, BigDecimal desconto, BigDecimal acrescimo, Long idProduto) {
         this.quantidade = quantidade;

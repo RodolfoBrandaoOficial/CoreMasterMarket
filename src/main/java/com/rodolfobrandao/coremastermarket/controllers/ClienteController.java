@@ -3,9 +3,13 @@ package com.rodolfobrandao.coremastermarket.controllers;
 import com.rodolfobrandao.coremastermarket.dtos.CreateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.dtos.SearchCriteriaDTO;
 import com.rodolfobrandao.coremastermarket.entities.Cliente;
+import com.rodolfobrandao.coremastermarket.exceptions.ErrorResponse;
 import com.rodolfobrandao.coremastermarket.services.ClienteService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/v1/clientes")
@@ -19,26 +23,19 @@ public class ClienteController {
     /**
      * This method is used to list all clients.
      *
-     * @param qtype     The query type.
-     * @param query     The query.
-     * @param oper      The operation.
-     * @param page      The page.
-     * @param rp        The rp.
-     * @param sortname  The sort name.
-     * @param sortorder The sort order.
      * @return The page of clients.
+     * @since 1.0
+     * @version 1.0
      */
     @GetMapping("/listar")
-    public Page<Cliente> listarClientes(
-            @RequestParam(value = "qtype", required = false) String qtype,
-            @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "oper", required = false) String oper,
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "rp", defaultValue = "10") int rp,
-            @RequestParam(value = "sortname", defaultValue = "id") String sortname,
-            @RequestParam(value = "sortorder", defaultValue = "asc") String sortorder) {
-
-        return clienteService.findByQuery(qtype, query, oper, page, rp, sortname, sortorder);
+    public ResponseEntity<?> listarClientes() {
+        try {
+            Page<Cliente> clientes = clienteService.findAll(1, ">=", 1, "id", "asc");
+            return ResponseEntity.ok(clientes);
+        } catch (Exception ex) {
+            ErrorResponse errorResponse = new ErrorResponse("Erro ao listar clientes: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, System.currentTimeMillis(), 500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     /**
@@ -46,6 +43,8 @@ public class ClienteController {
      *
      * @param searchCriteria The search criteria.
      * @return The page of clients.
+     * @since 1.0
+     * @version 1.0
      */
 
     @PostMapping("/findByQuery")
@@ -66,6 +65,8 @@ public class ClienteController {
      *
      * @param id The id.
      * @return The client.
+     * @since 1.0
+     * @version 1.0
      */
     @GetMapping("/buscar/{id}")
     public Cliente buscarCliente(@PathVariable Long id) {
@@ -77,9 +78,17 @@ public class ClienteController {
      *
      * @param dto The dto.
      * @return The client.
+     * @throws Exception If the client cannot be created.
+     * @since 1.0
+     * @version 1.0
      */
-    @PostMapping("/cadastrar")
+    @PostMapping("/create")
     public Cliente cadastrarCliente(@RequestBody CreateClienteItemDTO dto) {
+        return clienteService.create(dto);
+    }
+
+    @PutMapping("/update")
+    public Cliente atualizarCliente(@RequestBody CreateClienteItemDTO dto) {
         return clienteService.create(dto);
     }
 }
