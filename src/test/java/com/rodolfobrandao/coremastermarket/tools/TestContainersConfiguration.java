@@ -10,10 +10,11 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration
 public class TestContainersConfiguration {
 
-    private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.3"))
-            .withDatabaseName("coremastermarket")
-            .withUsername("postgres")
-            .withPassword("senha_vrcursojava");
+    private static final PostgreSQLContainer<?> postgreSQLContainer =
+            new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.3"))
+                    .withDatabaseName("coremastermarket")
+                    .withUsername("postgres")
+                    .withPassword("senha_vrcursojava");
 
     static {
         postgreSQLContainer.start();
@@ -31,5 +32,6 @@ public class TestContainersConfiguration {
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
         registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
     }
 }

@@ -17,7 +17,7 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 @Builder
-@ToString
+//@ToString
 @Data
 @NoArgsConstructor
 public class User implements UserDetails {
