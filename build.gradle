@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
@@ -14,15 +15,12 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
+    google()
     maven { url 'https://repo.spring.io/milestone' }
+    maven { url "https://repo.spring.io/release" }
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
 }
 
 ext {
@@ -30,21 +28,30 @@ ext {
     set('springAiVersion', "1.0.0-M1")
     set('springCloudVersion', "2023.0.3")
 }
+ext {
+    springdocVersion = "2.3.0"
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-common:${springdocVersion}"
+    implementation 'io.swagger.core.v3:swagger-annotations'
+    implementation 'com.sun.net.httpserver:http:20070405'
+    implementation 'org.springframework.security:spring-security-config:6.3.1'
+    implementation 'com.auth0:java-jwt:3.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'javax.persistence:javax.persistence-api:2.2'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-//    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.okta.spring:okta-spring-boot-starter:3.0.7'
     implementation 'org.springframework.ai:spring-ai-ollama-spring-boot-starter'
     implementation 'org.springframework.cloud:spring-cloud-starter'
     implementation 'org.springframework.security:spring-security-messaging'
-//    implementation 'org.springframework.security:spring-security-rsocket'
     implementation 'org.springframework.session:spring-session-core'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

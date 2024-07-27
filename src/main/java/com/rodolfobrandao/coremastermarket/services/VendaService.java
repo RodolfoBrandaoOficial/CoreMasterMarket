@@ -42,4 +42,5 @@ public class VendaService {
         Specification<Cliente> spec = GenericSpecification.buildSpecification(qtype, query, oper);
         return vendaRepository.findAll(spec, pageable);
     }
+
 }

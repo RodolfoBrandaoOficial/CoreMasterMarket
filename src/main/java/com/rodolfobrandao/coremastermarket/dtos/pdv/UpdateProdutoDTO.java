@@ -2,8 +2,9 @@ package com.rodolfobrandao.coremastermarket.dtos.pdv;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record UpdateProdutoDTO(Long id, String codigoBarras, String descricao, BigDecimal precoVenda, String tipoEmbalagem, String quantidade, LocalDate criadoEm, LocalDate atualizadoEm, String marca, boolean ativo) {
+public record UpdateProdutoDTO(Long id, String codigoBarras, String descricao, BigDecimal precoVenda, String tipoEmbalagem, Long quantidade, LocalDateTime atualizadoEm, Long marca, boolean ativo) {
     /**
      * CreateProdutoDTO
      *  - id: Identificador do produto

@@ -1,11 +1,13 @@
 package com.rodolfobrandao.coremastermarket.entities.pdv;
 
+import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Data
@@ -17,11 +19,11 @@ public class Venda {
 
     @Column(name = "datahora_inicio", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date dataHoraInicio;
+    private LocalDateTime dataHoraInicio;
 
     @Column(name = "datahora_termino")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date dataHoraTermino;
+    private LocalDateTime dataHoraTermino;
 
     @Column(length = 255)
     private String observacao;
@@ -32,7 +34,7 @@ public class Venda {
     @JoinColumn(name = "id_venda", referencedColumnName = "id")
     private List<VendaItem> listVendaItens;
 
-    public Venda(Date dataHoraInicio, Date dataHoraTermino, String observacao, Long pdv, List<VendaItem> listVendaItens) {
+    public Venda(LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listVendaItens, Optional<Cliente> cliente) {
         this.dataHoraInicio = dataHoraInicio;
         this.dataHoraTermino = dataHoraTermino;
         this.observacao = observacao;

@@ -30,4 +30,8 @@ public class MarcaService {
         return marcaRepository.save(marca);
     }
 
+    public Marca findById(Long id) {
+        return marcaRepository.findById(id).orElse(null);
+    }
+
 }
