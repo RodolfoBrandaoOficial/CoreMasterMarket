@@ -15,17 +15,17 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Exemplo de API")
-                        .version("1.0.0")
-                        .description("Descrição da API")
-                        .termsOfService("https://example.com/terms")
+                        .title("CoreMasterMarket API")
+                        .version("0.0.1")
+                        .description("API para gerenciamento de vendas, clientes e produtos no CoreMasterMarket")
+                        .termsOfService("https://github.com/RodolfoBrandaoOficial/CoreMasterMarket")
                         .contact(new Contact()
-                                .name("Nome do Contato")
-                                .url("https://example.com/contact")
-                                .email("contato@example.com"))
+                                .name("Rodolfo Brandão")
+                                .url("https://github.com/RodolfoBrandaoOficial/CoreMasterMarket")
+                                .email("rodolfo@rodolfobrandao.com.br"))
                         .license(new License()
                                 .name("Licença")
-                                .url("https://example.com/license")))
-                .addServersItem(new Server().url("http://localhost:8080"));
+                                .url("https://github.com/RodolfoBrandaoOficial/CoreMasterMarket")))
+                .addServersItem(new Server().url("http://localhost:8081"));
     }
 }
