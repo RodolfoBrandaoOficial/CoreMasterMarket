@@ -1,7 +1,7 @@
 package com.rodolfobrandao.coremastermarket.repositories;
 
-import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import com.rodolfobrandao.coremastermarket.entities.pdv.Produto;
+import com.rodolfobrandao.coremastermarket.tools.PaginationRequestDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,13 +13,19 @@ import java.util.Optional;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-    //Consulta por código de barras
     /**
      * Método que busca um produto pelo código de barras
      * @param codigoBarras
-     * @return
+     * @return Produto encontrado ou vazio
      */
     Optional<Produto> findByCodigoBarras(String codigoBarras);
 
-    Page<Cliente> findAll(Specification<Cliente> spec, Pageable pageable);
+    /**
+     * Método que busca produtos com especificações e paginação
+     * @param spec Especificação de filtro
+     * @param pageable Página e tamanho
+     * @return Página de produtos
+     */
+    Page<Produto> findAll(Specification<Produto> spec, Pageable pageable);
+
 }

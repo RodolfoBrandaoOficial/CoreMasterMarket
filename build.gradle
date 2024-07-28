@@ -33,44 +33,64 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
-    implementation "org.springdoc:springdoc-openapi-starter-common:${springdocVersion}"
-    implementation 'io.swagger.core.v3:swagger-annotations'
-    implementation 'com.sun.net.httpserver:http:20070405'
-    implementation 'org.springframework.security:spring-security-config:6.3.1'
-    implementation 'com.auth0:java-jwt:3.3.0'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'javax.persistence:javax.persistence-api:2.2'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.okta.spring:okta-spring-boot-starter:3.0.7'
-    implementation 'org.springframework.ai:spring-ai-ollama-spring-boot-starter'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
-    implementation 'org.springframework.security:spring-security-messaging'
-    implementation 'org.springframework.session:spring-session-core'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
+    // Annotations
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.testcontainers:postgresql'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:testcontainers'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.assertj:assertj-core'
 
+    // Compile Only
+    compileOnly 'org.projectlombok:lombok'
+
+    // Development Only
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Implementations
+    implementation 'com.auth0:java-jwt:3.3.0' // JWT for authentication and authorization
+    implementation 'com.okta.spring:okta-spring-boot-starter:3.0.7' // Okta Spring Boot starter for authentication
+    implementation 'com.sun.net.httpserver:http:20070405' // HTTP server
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2' // Swagger UI for API documentation
+    implementation 'io.springfox:springfox-swagger2:2.9.2' // Swagger 2 for API documentation
+    implementation 'io.swagger.core.v3:swagger-annotations' // Swagger annotations for API documentation
+    implementation 'javax.persistence:javax.persistence-api:2.2' // JPA API
+    implementation 'org.springframework.ai:spring-ai-ollama-spring-boot-starter' // Spring AI Ollama starter
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc' // Spring Boot JDBC starter
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Boot JPA starter
+    implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Boot starter for email
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // Spring Boot OAuth2 client starter
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // Spring Boot OAuth2 resource server starter
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Boot Security starter
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // Spring Boot validation starter
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Boot web starter
+    implementation 'org.springframework.cloud:spring-cloud-starter' // Spring Cloud starter
+    implementation 'org.springframework.security:spring-security-config:6.3.1' // Spring Security configuration
+    implementation 'org.springframework.security:spring-security-messaging' // Spring Security messaging
+    implementation 'org.springframework.session:spring-session-core' // Spring Session core
+
+    // SpringDoc for OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-common:${springdocVersion}" // SpringDoc OpenAPI common starter
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}" // SpringDoc OpenAPI WebMVC UI starter
+
+    // Runtime Only
+    runtimeOnly 'com.h2database:h2' // H2 Database
+    runtimeOnly 'org.postgresql:postgresql' // PostgreSQL driver
+
+    // Test Implementations
+    testImplementation 'io.projectreactor:reactor-test' // Reactor test support
+    testImplementation 'org.assertj:assertj-core' // AssertJ for fluent assertions
+    testImplementation 'org.aspectj:aspectjweaver' // AspectJ Weaver
+    testImplementation 'org.junit.jupiter:junit-jupiter-api' // JUnit Jupiter API for testing
+    testImplementation 'org.mockito:mockito-core:5.12.0'// Mockito core
+    testImplementation 'org.mockito:mockito-inline:5.2.0'// Mockito inline mocking
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot test starter
+    testImplementation 'org.springframework.boot:spring-boot-starter-web' // Spring Boot web starter for tests
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // Spring REST Docs MockMVC
+    testImplementation 'org.springframework.security:spring-security-test' // Spring Security test support
+    testImplementation 'org.testcontainers:junit-jupiter' // Testcontainers JUnit Jupiter support
+    testImplementation 'org.testcontainers:postgresql' // Testcontainers PostgreSQL support
+    testImplementation 'org.testcontainers:testcontainers' // Testcontainers core library
+
+    // Test Runtime Only
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit Platform launcher
 }
+
 
 dependencyManagement {
     imports {

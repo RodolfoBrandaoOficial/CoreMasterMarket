@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GlobalSetting.Cache">
+    <option name="cache">
+      <map>
+        <entry key="Global.Authorization" value="{&quot;token&quot;:&quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2RvbGZvYnJhbmRhbyIsImlzcyI6ImF1dGgtYXBpIiwiZXhwIjoxNzIyMjM2ODI4LCJ1c2VySWQiOiI2ODA0ZGIxOS1jZGE5LTQzM2EtYmM4ZC1mY2FiMDY5MWI2YjYifQ.Wap7JkZ9HQmBP7Xk6InPABw0XcMys6PzyTgCbyC0aWc\&quot;&quot;,&quot;password&quot;:&quot;&quot;,&quot;selectType&quot;:&quot;Bearer Token&quot;,&quot;username&quot;:&quot;&quot;}" />
+        <entry key="Global.Cookies" value="[]" />
+        <entry key="Global.Headers" value="[]" />
+      </map>
+    </option>
+  </component>
+</project>

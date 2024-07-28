@@ -3,6 +3,7 @@ package com.rodolfobrandao.coremastermarket.entities.pdv;
 import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,10 @@ public class Venda {
 
     private Long pdv;
 
+    @Column(name = "hash_fiscal")
+    @UuidGenerator
+    private String hashfiscal;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_venda", referencedColumnName = "id")
     private List<VendaItem> listVendaItens;
@@ -39,6 +44,15 @@ public class Venda {
         this.dataHoraTermino = dataHoraTermino;
         this.observacao = observacao;
         this.pdv = pdv;
+        this.listVendaItens = listVendaItens;
+    }
+    public Venda(Long id, LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listVendaItens, Optional<Cliente> cliente, String hashfiscal) {
+        this.id = id;
+        this.dataHoraInicio = dataHoraInicio;
+        this.dataHoraTermino = dataHoraTermino;
+        this.observacao = observacao;
+        this.pdv = pdv;
+        this.hashfiscal = hashfiscal;
         this.listVendaItens = listVendaItens;
     }
 

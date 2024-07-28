@@ -4,7 +4,6 @@ import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import com.rodolfobrandao.coremastermarket.entities.pdv.Venda;
 import com.rodolfobrandao.coremastermarket.repositories.VendaRepository;
 import com.rodolfobrandao.coremastermarket.specifications.GenericSpecification;
-import com.rodolfobrandao.coremastermarket.tools.PaginatedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

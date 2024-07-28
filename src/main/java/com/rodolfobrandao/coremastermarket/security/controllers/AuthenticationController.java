@@ -7,6 +7,7 @@ import com.rodolfobrandao.coremastermarket.security.models.user.AutheticationDTO
 import com.rodolfobrandao.coremastermarket.security.models.user.LoginResponseDTO;
 import com.rodolfobrandao.coremastermarket.security.models.user.RegisterDTO;
 import com.rodolfobrandao.coremastermarket.security.models.user.User;
+import com.rodolfobrandao.coremastermarket.tools.swagger.DefaultOperation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,6 +33,7 @@ public class AuthenticationController {
     @Autowired
     private ObjectMapper objectMapper;
     @PostMapping("/login")
+    @DefaultOperation(summary = "Login", description = "Realiza o login de um usuário", tags = {"Autenticação"})
     public ResponseEntity login(@RequestBody @Valid AutheticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -39,6 +43,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
+    @DefaultOperation(summary = "Registrar", description = "Registra um novo usuário", tags = {"Autenticação"})
     public ResponseEntity register(@RequestBody @Valid RegisterDTO data) {
         if (data.password() == null || data.password().isEmpty()) {
             return ResponseEntity.badRequest().body("A senha não pode ser nula ou vazia");
@@ -55,6 +60,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/userinfo")
+    @DefaultOperation(summary = "Informações do usuário", description = "Obtém informações do usuário autenticado", tags = {"Autenticação"})
     public ResponseEntity<String> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Verifica se o cabeçalho de autorização não está vazio e começa com "Bearer "
@@ -66,7 +72,7 @@ public class AuthenticationController {
             // Extrai o ID do usuário do token JWT usando o serviço de token
             String userId = tokenService.getUserIdFromToken(jwt);
             // Busca o usuário correspondente no banco de dados usando o ID
-            User user = repository.findById(userId)
+            User user = repository.findById(UUID.fromString(userId))
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
             // Retorna os detalhes do usuário na resposta
             return ResponseEntity.ok(String.valueOf(user)); // Retorna os detalhes do usuário como JSON

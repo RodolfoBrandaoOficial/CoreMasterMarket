@@ -1,5 +1,6 @@
 package com.rodolfobrandao.coremastermarket.tools;
 
+import com.rodolfobrandao.coremastermarket.tools.entities.PaginatedResponse;
 import jdk.jfr.Description;
 
 import java.util.List;

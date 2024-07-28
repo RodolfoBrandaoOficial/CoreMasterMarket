@@ -8,6 +8,7 @@ import com.rodolfobrandao.coremastermarket.entities.pdv.Venda;
 import com.rodolfobrandao.coremastermarket.entities.pdv.VendaItem;
 import com.rodolfobrandao.coremastermarket.services.ClienteService;
 import com.rodolfobrandao.coremastermarket.services.VendaService;
+import com.rodolfobrandao.coremastermarket.tools.swagger.DefaultOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ public class VendaController {
     }
 
     @GetMapping("/listar")
+    @DefaultOperation(summary = "Listar vendas", description = "Lista todas as vendas", tags = {"Venda"})
     public ResponseEntity<?> listarVendas() {
         try {
             return ResponseEntity.ok(vendaService.findAll(1, ">=", 1, "id", "asc"));
@@ -38,6 +40,7 @@ public class VendaController {
     }
 
     @PostMapping("/create")
+    @DefaultOperation(summary = "Criar venda", description = "Cria uma nova venda", tags = {"Venda"})
     public ResponseEntity<?> createVenda(@RequestBody CreateVendaDTO vendaDTO) {
         try {
             Optional<Cliente> clienteOpt = clienteService.findById(vendaDTO.idCliente());
@@ -86,6 +89,7 @@ public class VendaController {
 
 
     @PostMapping("/findById")
+    @DefaultOperation(summary = "Buscar venda por ID", description = "Busca uma venda pelo ID", tags = {"Venda"})
     public ResponseEntity<?> findById(@RequestBody Long id) {
         try {
             Venda venda = vendaService.findById(id);
@@ -99,6 +103,7 @@ public class VendaController {
     }
 
     @PostMapping("/findByQuery")
+    @DefaultOperation(summary = "Buscar vendas por consulta", description = "Busca vendas por consulta", tags = {"Venda"})
     public ResponseEntity<?> findByQuery(@RequestBody SearchCriteriaDTO searchCriteria) {
         try {
             Page<Cliente> clientes = vendaService.findByQuery(

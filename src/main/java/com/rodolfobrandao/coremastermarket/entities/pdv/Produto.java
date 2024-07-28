@@ -80,4 +80,5 @@ public class Produto implements Serializable {
     }
     public Produto(BigDecimal precoVenda, String codigoBarras, String tipoEmbalagem, String descricao, Long quantidade, LocalDateTime criadoEm, LocalDateTime atualizadoEm, Marca marca, boolean ativo, List<Cliente> clientes) {
     }
+
 }
