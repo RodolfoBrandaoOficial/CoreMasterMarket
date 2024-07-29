@@ -17,7 +17,7 @@ class PaginatedResponseTest {
     void testPaginatedResponse() {
         PaginatedResponse<String> paginatedResponse = new PaginatedResponse<>(10, 2, 5, 1, List.of("a", "b", "c", "d", "e"));
         assertEquals(10, paginatedResponse.totalElements());
-        assertEquals(2, paginatedResponse.totalPages());
+        assertEquals(2, paginatedResponse.totalPagers());
         assertEquals(5, paginatedResponse.size());
         assertEquals(1, paginatedResponse.page());
         assertEquals(List.of("a", "b", "c", "d", "e"), paginatedResponse.content());

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,8 +36,8 @@ class ClienteRepositoryTest {
         cliente.setCep("12345-678");
         cliente.setCidade("Cidade Teste");
         cliente.setEstado("Estado Teste");
-        cliente.setDataCadastro(LocalDate.now());
-        cliente.setDataAlteracao(LocalDate.now());
+        cliente.setDataCadastro(LocalDateTime.now());
+        cliente.setDataAlteracao(LocalDateTime.now());
         cliente.setAtivo(true);
         cliente.setLimiteCredito(1000.0);
         cliente.setDataPagamento(LocalDate.now());
