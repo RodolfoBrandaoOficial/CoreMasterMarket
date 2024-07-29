@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,29 +24,37 @@ public class ClienteService {
 
     @Autowired
     public ClienteService(ClienteRepository clienteRepository) {
-        try {
-            this.clienteRepository = clienteRepository;
-        } catch (Exception ex) {
-            throw new RuntimeException(JsonUtil.createMessageJson("Erro ao instanciar ClienteService: " + ex.getMessage(), 500));
-        }
+        this.clienteRepository = clienteRepository;
     }
+    LocalDateTime dataAtual = LocalDateTime.now();
+    LocalDateTime dataAtualTime = LocalDateTime.now();
 
+    /**
+     * Retorna uma página de clientes com base nos parâmetros fornecidos.
+     *
+     * @param page      Número da página (1-indexado)
+     * @param oper      Operador de filtragem
+     * @param rp        Número de registros por página
+     * @param sortname  Nome do campo para ordenação
+     * @param sortorder Direção da ordenação (asc/desc)
+     * @return Página de clientes
+     */
     public Page<Cliente> findAll(int page, String oper, int rp, String sortname, String sortorder) {
         Pageable pageable = PageRequest.of(page - 1, rp, Sort.by(Sort.Order.by(sortname).with(Sort.Direction.fromString(sortorder))));
         return clienteRepository.findAll(pageable);
     }
 
     /**
-     * Método que retorna todos os clientes
+     * Retorna uma página de clientes com base na consulta e filtros fornecidos.
      *
-     * @param qtype
-     * @param query
-     * @param oper
-     * @param page
-     * @param rp
-     * @param sortname
-     * @param sortorder
-     * @return
+     * @param qtype     Tipo de consulta
+     * @param query     Consulta a ser realizada
+     * @param oper      Operador de filtragem
+     * @param page      Número da página (1-indexado)
+     * @param rp        Número de registros por página
+     * @param sortname  Nome do campo para ordenação
+     * @param sortorder Direção da ordenação (asc/desc)
+     * @return Página de clientes filtrados
      */
     public Page<Cliente> findByQuery(String qtype, String query, String oper, int page, int rp, String sortname, String sortorder) {
         try {
@@ -59,26 +67,26 @@ public class ClienteService {
     }
 
     /**
-     * Método que retorna todos os clientes
+     * Retorna um cliente com base no ID fornecido.
      *
-     * @return
+     * @param id ID do cliente
+     * @return Cliente, se encontrado
      */
-
     public Optional<Cliente> findById(Long id) {
         try {
             return clienteRepository.findById(id);
         } catch (Exception ex) {
-            throw new RuntimeException(JsonUtil.createMessageJson("Erro ao listar clientes: " + ex.getMessage(), 500));
+            throw new RuntimeException(JsonUtil.createMessageJson("Erro ao buscar cliente: " + ex.getMessage(), 500));
         }
     }
 
     /**
-     * Método que retorna todos os clientes
+     * Cria um novo cliente com base nos dados fornecidos.
      *
-     * @return
+     * @param dto Dados do cliente a ser criado
+     * @return Cliente criado
      */
     public Cliente create(CreateClienteItemDTO dto) {
-        LocalDate DataAtual = LocalDate.now();
         try {
             Cliente cliente = new Cliente(
                     dto.nome(),
@@ -95,9 +103,9 @@ public class ClienteService {
                     dto.cep(),
                     dto.cidade(),
                     dto.estado(),
-                    DataAtual, //dataCadastro
-                    dto.dataAlteracao(),
-                    dto.dataExclusao(),
+                    dataAtualTime,
+                    dto.dataAlteracao().atStartOfDay(),
+                    dto.dataExclusao().atStartOfDay(),
                     dto.ativo(),
                     dto.observacao(),
                     dto.limiteCredito(),
@@ -112,12 +120,13 @@ public class ClienteService {
     }
 
     /**
-     * Método que atualiza cliente
+     * Atualiza um cliente existente com base nos dados fornecidos.
      *
-     * @param dto
+     * @param dto Dados atualizados do cliente
+     * @return Cliente atualizado
      */
     public Cliente update(UpdateClienteItemDTO dto) {
-        LocalDate DataAtual = LocalDate.now();
+        LocalDateTime dataAtual = LocalDateTime.now();
         Optional<Cliente> cliente = clienteRepository.findById(dto.id());
         try {
             if (cliente.isPresent()) {
@@ -136,8 +145,8 @@ public class ClienteService {
                 clienteAtualizado.setCep(dto.cep());
                 clienteAtualizado.setCidade(dto.cidade());
                 clienteAtualizado.setEstado(dto.estado());
-                clienteAtualizado.setDataAlteracao(DataAtual);
-                clienteAtualizado.setDataExclusao(dto.dataExclusao());
+                dataAtual = LocalDateTime.now();
+                clienteAtualizado.setDataAlteracao(dataAtual);
                 clienteAtualizado.setAtivo(dto.ativo());
                 clienteAtualizado.setObservacao(dto.observacao());
                 clienteAtualizado.setLimiteCredito(dto.limiteCredito());
@@ -154,9 +163,9 @@ public class ClienteService {
     }
 
     /**
-     * Método que deleta cliente
+     * Deleta um cliente com base no ID fornecido.
      *
-     * @param id
+     * @param id ID do cliente a ser deletado
      */
     public void delete(Long id) {
         try {

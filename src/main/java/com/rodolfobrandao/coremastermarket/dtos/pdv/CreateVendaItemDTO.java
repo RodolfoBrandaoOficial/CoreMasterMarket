@@ -2,7 +2,14 @@ package com.rodolfobrandao.coremastermarket.dtos.pdv;
 
 import java.math.BigDecimal;
 
-public record CreateVendaItemDTO(BigDecimal quantidade, BigDecimal desconto, BigDecimal acrescimo, Long idProduto, Long id_venda, Long id_cliente) {
+public record CreateVendaItemDTO(
+        BigDecimal quantidade,
+        BigDecimal desconto,
+        BigDecimal acrescimo,
+        BigDecimal precoUnitario,
+        Long idProduto,
+        Long id_venda,
+        Long id_cliente) {
     /**
      * CreateVendaItemDTO
      *  - quantidade: Quantidade do item

@@ -7,7 +7,7 @@ public record UpdateClienteItemDTO(Long id, String nome, LocalDate dataNasciment
                                    String cpfCnpj, String rgIe, String telefone1, String telefone2, boolean emitirNota,
                                    String email, String cep, String cidade, String estado, LocalDateTime dataCadastro,
                                    LocalDate dataAlteracao, LocalDate dataExclusao, boolean ativo, String observacao,
-                                   double limiteCredito, LocalDate dataPagamento, LocalDate dataVencimento, LocalDate dataFechamentoFatura) {
+                                   Double limiteCredito, LocalDate dataPagamento, LocalDate dataVencimento, LocalDate dataFechamentoFatura) {
     /**
      * UpdateClienteItemDTO
      * @param id Como base para atualizar

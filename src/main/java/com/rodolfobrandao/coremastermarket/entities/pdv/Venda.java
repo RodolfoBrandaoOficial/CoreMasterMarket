@@ -3,12 +3,12 @@ package com.rodolfobrandao.coremastermarket.entities.pdv;
 import com.rodolfobrandao.coremastermarket.entities.Cliente;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.UuidGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,7 +18,7 @@ public class Venda {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "datahora_inicio", nullable = false)
+    @Column(name = "datahora_inicio")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataHoraInicio;
 
@@ -31,32 +31,45 @@ public class Venda {
 
     private Long pdv;
 
-    @Column(name = "hash_fiscal")
-    @UuidGenerator
-    private String hashfiscal;
+    @Column(unique = true)
+    private String hash;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_venda", referencedColumnName = "id")
-    private List<VendaItem> listVendaItens;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "venda", orphanRemoval = true)
+    private List<VendaItem> listVendaItens = new ArrayList<>();
 
-    public Venda(LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listVendaItens, Optional<Cliente> cliente) {
+    @ManyToOne
+    @JoinColumn(name = "modo_pagamento_id", referencedColumnName = "id")
+    private ModoPagamento modoPagamento;
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
+    public Venda(LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listVendaItens, ModoPagamento modoPagamento, Cliente cliente) {
         this.dataHoraInicio = dataHoraInicio;
         this.dataHoraTermino = dataHoraTermino;
         this.observacao = observacao;
         this.pdv = pdv;
-        this.listVendaItens = listVendaItens;
-    }
-    public Venda(Long id, LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listVendaItens, Optional<Cliente> cliente, String hashfiscal) {
-        this.id = id;
-        this.dataHoraInicio = dataHoraInicio;
-        this.dataHoraTermino = dataHoraTermino;
-        this.observacao = observacao;
-        this.pdv = pdv;
-        this.hashfiscal = hashfiscal;
-        this.listVendaItens = listVendaItens;
+        this.listVendaItens = listVendaItens != null ? listVendaItens : new ArrayList<>();
+        this.modoPagamento = modoPagamento;
+        this.cliente = cliente;
+        this.hash = UUID.randomUUID().toString();
     }
 
     public Venda() {
+        this.listVendaItens = new ArrayList<>();
+        this.hash = UUID.randomUUID().toString();
+    }
+
+    public Venda(LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listItens, Long aLong, Cliente cliente) {
+    this.dataHoraInicio = dataHoraInicio;
+    this.dataHoraTermino = dataHoraTermino;
+    this.observacao = observacao;
+    this.pdv = pdv;
+    this.listVendaItens = listItens;
+    this.cliente = cliente;
 
     }
+
+    // Outros construtores e métodos
 }

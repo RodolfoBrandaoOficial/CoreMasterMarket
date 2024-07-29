@@ -10,7 +10,7 @@ public class JsonUtil {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao converter para JSON" + e);
+            throw new RuntimeException("Erro ao converter objeto para JSON", e);
         }
     }
 

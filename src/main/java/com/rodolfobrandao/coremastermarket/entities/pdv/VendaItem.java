@@ -23,39 +23,29 @@ public class VendaItem {
     @Column(name = "id_produto")
     private Long idProduto;
 
-    @Column(name = "id_venda")
-    @JsonIgnore
-    private Long idVenda;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_venda", insertable = false, updatable = false)
-    @JsonIgnore
-    @JsonProperty("venda")
+    @ManyToOne
+    @JoinColumn(name = "id_venda", nullable = false)
     private Venda venda;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_produto", insertable = false, updatable = false, referencedColumnName = "id")
-    @JsonProperty("produto")
-    private Produto produto;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_cliente")
-    @JsonProperty("cliente")
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
     // Construtor com idCliente removido
-    public VendaItem(BigDecimal quantidade, BigDecimal desconto, BigDecimal acrescimo, Long idProduto, Cliente cliente) {
+    public VendaItem(BigDecimal quantidade, BigDecimal desconto, BigDecimal acrescimo, Long idProduto, Venda venda, Cliente cliente) {
         this.quantidade = quantidade;
-        this.acrescimo = acrescimo;
         this.desconto = desconto;
+        this.acrescimo = acrescimo;
         this.idProduto = idProduto;
-        this.cliente = cliente; // Associar o cliente diretamente
+        this.venda = venda;
+        this.cliente = cliente;
     }
 
     public VendaItem() {
     }
 
     public BigDecimal getTotal() {
-        return BigDecimal.valueOf(20.0);
+        return BigDecimal.valueOf(20.0); // Valor de exemplo
     }
+
 }

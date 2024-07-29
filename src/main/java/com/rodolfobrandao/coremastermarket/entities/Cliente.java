@@ -1,11 +1,16 @@
 package com.rodolfobrandao.coremastermarket.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
+@AllArgsConstructor
 public class Cliente {
     /**
      * The id of the client.
@@ -57,13 +62,13 @@ public class Cliente {
     private String estado;
 
     @Column(name = "data_cadastro", nullable = false)
-    private LocalDate dataCadastro;
+    private LocalDateTime dataCadastro;
 
     @Column(name = "data_alteracao", nullable = false)
-    private LocalDate dataAlteracao;
+    private LocalDateTime dataAlteracao;
 
     @Column(name = "data_exclusao")
-    private LocalDate dataExclusao;
+    private LocalDateTime dataExclusao;
 
     @Column(length = 255)
     private boolean ativo;
@@ -83,7 +88,7 @@ public class Cliente {
     @Column(name = "data_fechamento_fatura", nullable = false)
     private LocalDate dataFechamentoFatura;
 
-    public Cliente(String nome, LocalDate dataNascimento, String rua, String bairro, String numero, String cpfCnpj, String rgIe, String telefone1, String telefone2, boolean emitirNota, String email, String cep, String cidade, String estado, LocalDate dataCadastro, LocalDate dataAlteracao, LocalDate dataExclusao, boolean ativo, String observacao, double limiteCredito, LocalDate dataPagamento, LocalDate dataVencimento, LocalDate dataFechamentoFatura) {
+    public Cliente(String nome, LocalDate dataNascimento, String rua, String bairro, String numero, String cpfCnpj, String rgIe, String telefone1, String telefone2, boolean emitirNota, String email, String cep, String cidade, String estado, LocalDateTime dataCadastro, LocalDateTime dataAlteracao, LocalDateTime dataExclusao, boolean ativo, String observacao, double limiteCredito, LocalDate dataPagamento, LocalDate dataVencimento, LocalDate dataFechamentoFatura) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.rua = rua;
@@ -98,7 +103,7 @@ public class Cliente {
         this.cep = cep;
         this.cidade = cidade;
         this.estado = estado;
-        this.dataCadastro = dataCadastro;
+        this.dataCadastro = LocalDateTime.from(dataCadastro);
         this.dataAlteracao = dataAlteracao;
         this.dataExclusao = dataExclusao;
         this.ativo = ativo;
@@ -111,4 +116,5 @@ public class Cliente {
 
     public Cliente() {
     }
+
 }
