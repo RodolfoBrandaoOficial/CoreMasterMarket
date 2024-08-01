@@ -47,7 +47,7 @@ public class ProdutoController {
             PaginatedResponse<Produto> response = PaginationUtils.toPaginatedResponse(produtos);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
-            return ResponseEntity.status(500).body(ex.getMessage());
+            return ResponseEntity.status(500).body(JsonUtil.createMessageJson("Erro ao listar produtos: " + ex.getMessage(), 500));
         }
     }
 
@@ -76,7 +76,7 @@ public class ProdutoController {
     public ResponseEntity<String> createProduto(@RequestBody CreateProdutoDTO dto) {
         try {
             Produto produto = produtoService.create(dto);
-            return ResponseEntity.ok(String.valueOf(produto));
+            return ResponseEntity.ok(JsonUtil.createMessageJson("Produto criado com sucesso", 201));
         } catch (Exception ex) {
             return ResponseEntity.status(500).body(ex.getMessage());
         }

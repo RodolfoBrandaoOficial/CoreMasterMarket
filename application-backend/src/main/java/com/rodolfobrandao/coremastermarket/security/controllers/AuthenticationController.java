@@ -60,6 +60,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/userinfo")
+    @DefaultOperation(summary = "Informações do usuário", description = "Obtém informações do usuário autenticado", tags = {"Autenticação"})
     public ResponseEntity<String> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Verifica se o cabeçalho de autorização não está vazio e começa com "Bearer "

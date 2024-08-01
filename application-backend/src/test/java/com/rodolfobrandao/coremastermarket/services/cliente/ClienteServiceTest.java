@@ -4,8 +4,6 @@ import com.rodolfobrandao.coremastermarket.dtos.cliente.CreateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.dtos.cliente.UpdateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
 import com.rodolfobrandao.coremastermarket.repositories.cliente.ClienteRepository;
-import com.rodolfobrandao.coremastermarket.specifications.GenericSpecification;
-import com.rodolfobrandao.coremastermarket.tools.JsonUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,9 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -23,8 +19,10 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class ClienteServiceTest {

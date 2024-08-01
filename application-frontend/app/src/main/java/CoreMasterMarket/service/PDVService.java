@@ -5,8 +5,6 @@ import static CoreMasterMarket.config.ConfigReal.GlobalToken;
 import CoreMasterMarket.gui.App;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.*;
-import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -16,7 +14,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -43,7 +40,7 @@ public class PDVService {
     public PDVService() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new App().setVisible(true);
+                new App().setVisible(false);
             }
         });
 
@@ -693,8 +690,6 @@ public class PDVService {
     }
 
     private boolean verificarSenhaFiscal(String senha) {
-        // Implementar a lógica de verificação da senha do Fiscal
-        // Aqui é apenas um exemplo simples
         return "senha123".equals(senha);
     }
 
@@ -703,7 +698,6 @@ public class PDVService {
         frame.getContentPane().removeAll();
         frame.repaint();
     }
-
 //    public static void main(String[] args) {
 //        SwingUtilities.invokeLater(PDVService::new);
 //    }

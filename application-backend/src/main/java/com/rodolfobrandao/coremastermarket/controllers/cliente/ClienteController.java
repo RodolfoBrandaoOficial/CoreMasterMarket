@@ -1,6 +1,7 @@
 package com.rodolfobrandao.coremastermarket.controllers.cliente;
 
 import com.rodolfobrandao.coremastermarket.dtos.cliente.CreateClienteItemDTO;
+import com.rodolfobrandao.coremastermarket.dtos.cliente.DeleteClienteDTO;
 import com.rodolfobrandao.coremastermarket.dtos.cliente.SearchCriteriaDTO;
 import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
 import com.rodolfobrandao.coremastermarket.exceptions.ErrorResponse;
@@ -44,7 +45,19 @@ public class ClienteController {
         }
     }
 
-    /**
+    @PutMapping("/enabled")
+    @DefaultOperation(summary = "Habilitar cliente", description = "Habilita um cliente", tags = {"Cliente"})
+    public ResponseEntity<?> habilitarCliente(@RequestBody DeleteClienteDTO deleteClienteDTO){
+        try {
+            clienteService.findById(deleteClienteDTO.id());
+            return ResponseEntity.ok(JsonUtil.createMessageJson("Cliente habilitado com sucesso", 200));
+        } catch (Exception ex) {
+            ErrorResponse errorResponse = new ErrorResponse("Erro ao habilitar cliente: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, System.currentTimeMillis(), 500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+                                              /**
      * This method is used to search for a client by a query.
      *
      * @param searchCriteria The search criteria.
@@ -53,8 +66,8 @@ public class ClienteController {
      * @since 1.0
      */
 
-    @PostMapping("/findByQuery")
-    @DefaultOperation(summary = "Pesquisar clientes", description = "Pesquisa por clientes", tags = {"Cliente"})
+                                              @PostMapping("/findByQuery")
+                                              @DefaultOperation(summary = "Pesquisar clientes", description = "Pesquisa por clientes", tags = {"Cliente"})
     public Page<Cliente> findByQuery(@RequestBody SearchCriteriaDTO searchCriteria) {
         try {
             return clienteService.findByQuery(

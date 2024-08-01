@@ -3,6 +3,7 @@ package com.rodolfobrandao.coremastermarket.services.cliente;
 import com.rodolfobrandao.coremastermarket.dtos.cliente.CreateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.dtos.cliente.UpdateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
+import com.rodolfobrandao.coremastermarket.entities.produto.Produto;
 import com.rodolfobrandao.coremastermarket.repositories.cliente.ClienteRepository;
 import com.rodolfobrandao.coremastermarket.specifications.GenericSpecification;
 import com.rodolfobrandao.coremastermarket.tools.JsonUtil;
@@ -80,6 +81,24 @@ public class ClienteService {
         }
     }
 
+    /**
+     * Desativa um cliente com base no ID fornecido.
+     *
+     * @param id ID do cliente a ser desativado
+     * @return Cliente desativado
+     */
+
+    public Cliente enabledById(Long id) {
+        try {
+            Cliente cliente = clienteRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Cliente não encontrado", 404)));
+            cliente.setAtivo(true);
+            cliente.setDataAlteracao(dataAtual);
+            return clienteRepository.save(cliente);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
     /**
      * Cria um novo cliente com base nos dados fornecidos.
      *

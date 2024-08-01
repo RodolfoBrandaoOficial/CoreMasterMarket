@@ -77,27 +77,20 @@ public class ProdutoService {
     }
 
 
-    public Produto create(CreateProdutoDTO dto) {
-        Json j = new Json();
+    public Produto create(CreateProdutoDTO createProdutoDTO) {
         try {
-            Marca marca = marcaRepository.findById(dto.marca())
+            Marca marca = marcaRepository.findById(createProdutoDTO.marca())
                     .orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Marca não encontrada", 404)));
-
-            boolean exists = produtoRepository.findByCodigoBarras(dto.codigoBarras()).isPresent();
-            if (exists) {
-                throw new RuntimeException(JsonUtil.createMessageJson("Produto já cadastrado", 400));
+            Produto produto = new Produto(createProdutoDTO.precoVenda(), createProdutoDTO.codigoBarras(), createProdutoDTO.tipoEmbalagem(), createProdutoDTO.descricao(), BigDecimal.valueOf(createProdutoDTO.quantidade()), createProdutoDTO.criadoEm() == null ? dataAtualTime : createProdutoDTO.criadoEm(), marca, createProdutoDTO.ativo());
+            if(produtoRepository.findByCodigoBarras(produto.getCodigoBarras()).isPresent()){
+                throw new RuntimeException(JsonUtil.createMessageJson("Código de barras já cadastrado", 400));
             }
-
-            LocalDateTime criadoEm = (dto.criadoEm() == null) ? LocalDateTime.now() : dto.criadoEm();
-
-            Produto produto = new Produto(dto.precoVenda(), dto.codigoBarras(), dto.tipoEmbalagem(), dto.descricao(),
-                    BigDecimal.valueOf(dto.quantidade()), criadoEm, marca, dto.ativo());
-
             return produtoRepository.save(produto);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception ex) {
+            throw new RuntimeException(JsonUtil.createMessageJson("Erro ao criar produto: ", 500));
         }
     }
+
     public void reduzirEstoque(Long produtoId, BigDecimal quantidade) {
         try {
             Produto produto = produtoRepository.findById(produtoId)

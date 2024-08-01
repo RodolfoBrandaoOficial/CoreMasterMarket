@@ -20,21 +20,20 @@ public class MarcaController {
     private final MarcaService marcaService;
 
     @GetMapping("/list")
-    @DefaultOperation(summary = "Listar marcas", description = "Lista todas as marcas", tags = {"Marca"})
-    public ResponseEntity<?> listarMarcas(@RequestBody PaginationRequestDTO paginationRequest) {
+    public ResponseEntity<?> listarMarcas(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String sortname,
+            @RequestParam String sortorder) {
         try {
-            Page<Marca> marcasPage = marcaService.findAll(
-                    paginationRequest.getPage(),
-                    paginationRequest.getSize(),
-                    paginationRequest.getSortname(),
-                    paginationRequest.getSortorder()
-            );
+            Page<Marca> marcasPage = marcaService.findAll(page, size, sortname, sortorder);
             PaginatedResponse<Marca> response = PaginationUtils.toPaginatedResponse(marcasPage);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Erro ao listar marcas: " + ex.getMessage());
         }
     }
+
 
     @PostMapping("/create")
     @DefaultOperation(summary = "Criar marca", description = "Cria uma nova marca", tags = {"Marca"})

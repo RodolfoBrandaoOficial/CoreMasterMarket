@@ -5,9 +5,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rodolfobrandao.coremastermarket.dtos.pdv.CreateMarcaDTO;
 import com.rodolfobrandao.coremastermarket.entities.produto.Marca;
 import com.rodolfobrandao.coremastermarket.services.produto.MarcaService;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 import com.rodolfobrandao.coremastermarket.tools.PaginationRequestDTO;
 import com.rodolfobrandao.coremastermarket.tools.PaginationUtils;
-import com.rodolfobrandao.coremastermarket.tools.entities.PaginatedResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,10 +17,15 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -54,34 +60,22 @@ class MarcaControllerTest {
      * @throws Exception se ocorrer algum erro durante a execução do teste.
      */
     @Test
-    void testListarMarcas() throws Exception {
-        // Prepare mock data
-        Marca marca = new Marca();
-        marca.setId(1L);
-        marca.setNome("Marca Teste");
+    @WithMockUser
+    public void testListarMarcas() throws Exception {
+        List<Marca> marcas = Arrays.asList(new Marca(1L, "Marca A", "1"), new Marca(2L, "Marca B", "1"));
+        Page<Marca> pageMarcas = new PageImpl<>(marcas);
 
-        Page<Marca> marcasPage = new PageImpl<>(Collections.singletonList(marca));
+        when(marcaService.findAll(anyInt(), anyInt(), anyString(), anyString())).thenReturn(pageMarcas);
 
-        when(marcaService.findAll(anyInt(), anyInt(), anyString(), anyString())).thenReturn(marcasPage);
-
-        PaginationRequestDTO paginationRequest = new PaginationRequestDTO(); // Use o construtor sem argumentos
-        paginationRequest.setPage(0);
-        paginationRequest.setSize(10);
-        paginationRequest.setSortname("nome");
-        paginationRequest.setSortorder("asc");
-
-        PaginatedResponse<Marca> paginatedResponse = PaginationUtils.toPaginatedResponse(marcasPage);
-
-        // Execute the POST request and verify the response
-        mockMvc.perform(post("/api/v1/marcas/list")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/marcas/list")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(paginationRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data[0].id").value(1))
-                .andExpect(jsonPath("$.data[0].nome").value("Marca Teste"));
-
-        verify(marcaService, times(1)).findAll(anyInt(), anyInt(), anyString(), anyString());
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("sortname", "id")
+                        .param("sortorder", "asc"))
+                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(PaginationUtils.toPaginatedResponse(pageMarcas))));
     }
 
     /**
@@ -95,7 +89,7 @@ class MarcaControllerTest {
     @Test
     void testCreateMarca() throws Exception {
         // Prepare mock data
-        CreateMarcaDTO createMarcaDTO = new CreateMarcaDTO("Marca Teste", "Descrição Teste"); // Use o construtor correto
+        CreateMarcaDTO createMarcaDTO = new CreateMarcaDTO("Marca Teste", "Descrição Teste");
 
         Marca marca = new Marca();
         marca.setId(1L);
@@ -114,4 +108,5 @@ class MarcaControllerTest {
 
         verify(marcaService, times(1)).create(any(CreateMarcaDTO.class));
     }
+
 }
