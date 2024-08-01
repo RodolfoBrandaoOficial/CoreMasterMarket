@@ -46,7 +46,7 @@ public class ProdutoControllerTest {
     @Test
     void testListarProdutos() throws Exception {
         PaginationRequestDTO paginationRequest = new PaginationRequestDTO();
-        PaginatedResponse<Produto> paginatedResponse = new PaginatedResponse<>(0, 0, 10, 1, List.of());
+        PaginatedResponse<Produto> paginatedResponse = new PaginatedResponse<>();
 
         // Mock static method if necessary
         try (MockedStatic<PaginationUtils> utilities = Mockito.mockStatic(PaginationUtils.class)) {

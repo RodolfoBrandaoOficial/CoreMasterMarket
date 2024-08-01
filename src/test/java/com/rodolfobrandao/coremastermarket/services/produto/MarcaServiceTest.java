@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -118,10 +119,10 @@ class MarcaServiceTest {
         doNothing().when(marcaRepository).delete(any(Marca.class));
 
         // Execute the method and verify the response
-        Marca result = marcaService.delete(1L);
+        ResponseEntity result = marcaService.delete(1L);
 
         assertNotNull(result);
-        assertEquals("Marca Teste", result.getNome());
+        assertEquals("Marca Teste", result.toString());
         verify(marcaRepository, times(1)).delete(marca);
     }
 }

@@ -1,6 +1,7 @@
 package com.rodolfobrandao.coremastermarket.repositories.tools;
 
 import com.rodolfobrandao.coremastermarket.entities.pdv.Venda;
+import com.rodolfobrandao.coremastermarket.specifications.GenericQueryServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
