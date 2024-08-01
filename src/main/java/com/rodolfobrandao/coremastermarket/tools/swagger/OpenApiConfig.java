@@ -20,6 +20,7 @@ public class OpenApiConfig {
                         .title("CoreMasterMarket API")
                         .version("0.0.1")
                         .description("API para gerenciamento de vendas, clientes e produtos no CoreMasterMarket")
+                        .summary("(Teste prático - Desenvolvedor Java VR-SOFTWARE)")
                         .termsOfService("https://github.com/RodolfoBrandaoOficial/CoreMasterMarket")
                         .contact(new Contact()
                                 .name("Rodolfo Brandão")

@@ -1,8 +1,6 @@
 package com.rodolfobrandao.coremastermarket.entities.pdv;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rodolfobrandao.coremastermarket.entities.Cliente;
+import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -60,7 +60,6 @@ public class AuthenticationController {
     }
 
     @GetMapping("/userinfo")
-    @DefaultOperation(summary = "Informações do usuário", description = "Obtém informações do usuário autenticado", tags = {"Autenticação"})
     public ResponseEntity<String> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Verifica se o cabeçalho de autorização não está vazio e começa com "Bearer "
@@ -72,7 +71,7 @@ public class AuthenticationController {
             // Extrai o ID do usuário do token JWT usando o serviço de token
             String userId = tokenService.getUserIdFromToken(jwt);
             // Busca o usuário correspondente no banco de dados usando o ID
-            User user = repository.findById(UUID.fromString(userId))
+            User user = (User) repository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
             // Retorna os detalhes do usuário na resposta
             return ResponseEntity.ok(String.valueOf(user)); // Retorna os detalhes do usuário como JSON

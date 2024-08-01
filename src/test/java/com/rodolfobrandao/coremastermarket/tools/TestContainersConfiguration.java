@@ -1,4 +1,4 @@
-package com.rodolfobrandao.coremastermarket;
+package com.rodolfobrandao.coremastermarket.tools;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

@@ -43,6 +43,10 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Implementations
+    implementation 'com.google.auto.value:auto-value:1.9'
+    annotationProcessor 'com.google.auto.value:auto-value-annotations:1.9'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.3.2' // Spring Boot Thymeleaf starter
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // Spring Boot WebFlux starter
     implementation 'com.auth0:java-jwt:3.3.0' // JWT for authentication and authorization
     implementation 'com.okta.spring:okta-spring-boot-starter:3.0.7' // Okta Spring Boot starter for authentication
     implementation 'com.sun.net.httpserver:http:20070405' // HTTP server

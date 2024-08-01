@@ -9,7 +9,6 @@ public class PaginationUtils {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.getSize(),
-                page.getNumber(),
                 page.getContent()
         );
     }

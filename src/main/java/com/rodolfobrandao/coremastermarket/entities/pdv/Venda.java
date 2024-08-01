@@ -1,8 +1,9 @@
 package com.rodolfobrandao.coremastermarket.entities.pdv;
 
-import com.rodolfobrandao.coremastermarket.entities.Cliente;
+import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class Venda {
     private Long pdv;
 
     @Column(unique = true)
+    @UuidGenerator
     private String hash;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "venda", orphanRemoval = true)
@@ -53,7 +55,6 @@ public class Venda {
         this.listVendaItens = listVendaItens != null ? listVendaItens : new ArrayList<>();
         this.modoPagamento = modoPagamento;
         this.cliente = cliente;
-        this.hash = UUID.randomUUID().toString();
     }
 
     public Venda() {
@@ -61,14 +62,25 @@ public class Venda {
         this.hash = UUID.randomUUID().toString();
     }
 
-    public Venda(LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listItens, Long aLong, Cliente cliente) {
+    public Venda(LocalDateTime dataHoraInicio, LocalDateTime dataHoraTermino, String observacao, Long pdv, List<VendaItem> listItens, Long modoPagamento, Cliente cliente) {
     this.dataHoraInicio = dataHoraInicio;
     this.dataHoraTermino = dataHoraTermino;
     this.observacao = observacao;
     this.pdv = pdv;
     this.listVendaItens = listItens;
+    this.hash = UUID.randomUUID().toString();
     this.cliente = cliente;
 
+    }
+
+    public Venda(String hash, ModoPagamento modoPagamento, String observacao) {
+        this.hash = hash;
+        this.modoPagamento = modoPagamento;
+        this.observacao = observacao;
+    }
+
+    public Venda(String hash) {
+        this.hash = hash;
     }
 
     // Outros construtores e métodos

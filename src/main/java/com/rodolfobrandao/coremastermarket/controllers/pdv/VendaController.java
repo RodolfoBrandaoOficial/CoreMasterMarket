@@ -1,24 +1,18 @@
 package com.rodolfobrandao.coremastermarket.controllers.pdv;
 
-import com.rodolfobrandao.coremastermarket.dtos.SearchCriteriaDTO;
-import com.rodolfobrandao.coremastermarket.dtos.pdv.CreateVendaDTO;
-import com.rodolfobrandao.coremastermarket.dtos.pdv.CreateVendaItemDTO;
-import com.rodolfobrandao.coremastermarket.entities.Cliente;
-import com.rodolfobrandao.coremastermarket.entities.pdv.ModoPagamento;
+import com.rodolfobrandao.coremastermarket.dtos.pdv.*;
+import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
 import com.rodolfobrandao.coremastermarket.entities.pdv.Venda;
 import com.rodolfobrandao.coremastermarket.entities.pdv.VendaItem;
-import com.rodolfobrandao.coremastermarket.repositories.VendaRepository;
-import com.rodolfobrandao.coremastermarket.services.ClienteService;
-import com.rodolfobrandao.coremastermarket.services.ModoPagamentoService;
-import com.rodolfobrandao.coremastermarket.services.VendaService;
+import com.rodolfobrandao.coremastermarket.services.cliente.ClienteService;
+import com.rodolfobrandao.coremastermarket.services.pve.ModoPagamentoService;
+import com.rodolfobrandao.coremastermarket.services.produto.ProdutoService;
+import com.rodolfobrandao.coremastermarket.services.pve.VendaService;
 import com.rodolfobrandao.coremastermarket.tools.CustomException;
+import com.rodolfobrandao.coremastermarket.tools.JsonUtil;
+import com.rodolfobrandao.coremastermarket.tools.entities.PaginatedResponse;
 import com.rodolfobrandao.coremastermarket.tools.swagger.DefaultOperation;
-import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,50 +20,47 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static com.rodolfobrandao.coremastermarket.specifications.GenericSpecification.buildSpecification;
-
 @RestController
 @RequestMapping("/api/v1/vendas")
 public class VendaController {
 
     private final ClienteService clienteService;
-    private final ModoPagamentoService modoPagamentoService; // Adicione esta variável
+    private final ModoPagamentoService modoPagamentoService;
     private final VendaService vendaService;
+    private final ProdutoService produtoService;
 
-    public VendaController(ClienteService clienteService, ModoPagamentoService modoPagamentoService, VendaService vendaService) {
+    public VendaController(ClienteService clienteService, ModoPagamentoService modoPagamentoService, VendaService vendaService, ProdutoService produtoService) {
         this.clienteService = clienteService;
-        this.modoPagamentoService = modoPagamentoService; // Inicialize a variável
+        this.modoPagamentoService = modoPagamentoService;
         this.vendaService = vendaService;
+        this.produtoService = produtoService;
     }
 
     @GetMapping("/listar")
     @DefaultOperation(summary = "Listar vendas", description = "Lista todas as vendas", tags = {"Venda"})
-    public ResponseEntity<?> listarVendas() {
-        return ResponseEntity.ok(vendaService.findAll(1, ">=",100000, "id", "asc"));
+    public ResponseEntity<List<VendaDTO>> findAll() {
+        List<VendaDTO> vendas = vendaService.findAll();
+        return ResponseEntity.ok(vendas);
     }
 
     @PostMapping("/create")
     @DefaultOperation(summary = "Criar venda", description = "Cria uma nova venda", tags = {"Venda"})
-    public ResponseEntity<?> createVenda(@RequestBody CreateVendaDTO vendaDTO) {
+    public ResponseEntity<VendaDTO> createVenda(@RequestBody CreateVendaDTO vendaDTO) {
         Optional<Cliente> clienteOpt = clienteService.findById(vendaDTO.idCliente());
         if (clienteOpt.isEmpty()) {
             throw new CustomException("Cliente não encontrado", HttpStatus.NOT_FOUND);
         }
         Cliente cliente = clienteOpt.get();
-
-        // Cria um mapa para armazenar os itens com idProduto como chave
         Map<Long, VendaItem> itemMap = new HashMap<>();
 
         for (CreateVendaItemDTO itemDTO : vendaDTO.listVendaItens()) {
             VendaItem existingItem = itemMap.get(itemDTO.idProduto());
             if (existingItem != null) {
-                // Atualiza a quantidade do item existente usando BigDecimal.add
                 BigDecimal novaQuantidade = existingItem.getQuantidade().add(itemDTO.quantidade());
                 existingItem.setQuantidade(novaQuantidade);
                 existingItem.setDesconto(itemDTO.desconto());
                 existingItem.setAcrescimo(itemDTO.acrescimo());
             } else {
-                // Cria um novo item
                 VendaItem item = new VendaItem(
                         itemDTO.quantidade(),
                         itemDTO.desconto(),
@@ -82,10 +73,8 @@ public class VendaController {
             }
         }
 
-        // Converte o mapa de itens para uma lista
         List<VendaItem> listItens = new ArrayList<>(itemMap.values());
 
-        // Cria a venda com o cliente e os itens
         Venda venda = new Venda(
                 vendaDTO.dataHoraInicio(),
                 vendaDTO.dataHoraTermino(),
@@ -96,42 +85,35 @@ public class VendaController {
                 cliente
         );
 
-        // Atualiza os itens para associar a venda corretamente
         for (VendaItem item : listItens) {
             item.setVenda(venda);
+            produtoService.atualizarEstoque(item.getIdProduto(), item.getQuantidade()); // Atualiza o estoque
         }
 
-        // Salva a venda e retorna a resposta
         Venda newVenda = vendaService.create(venda);
-        return ResponseEntity.ok(newVenda); // Retorna a venda completa
+        VendaDTO vendaDTOResponse = vendaService.convertToVendaDTO(newVenda);
+        return ResponseEntity.ok(vendaDTOResponse);
     }
-
-
-
 
     @PostMapping("/findById")
     @DefaultOperation(summary = "Buscar venda por ID", description = "Busca uma venda pelo ID", tags = {"Venda"})
-    public ResponseEntity<?> findById(@RequestBody Long id) {
-        Venda venda = vendaService.findById(id);
-        if (venda == null) {
-            throw new CustomException("Venda não encontrada", HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(venda);
+    public ResponseEntity<VendaDTO> findById(@RequestBody ReadVendaDTO readVendaDTO) {
+        VendaDTO vendaDTO = vendaService.findById(readVendaDTO.id());
+        return ResponseEntity.ok(vendaDTO);
     }
 
-    @PostMapping("/findByQuery")
-    @DefaultOperation(summary = "Buscar vendas por consulta", description = "Busca vendas por consulta", tags = {"Venda"})
-    public ResponseEntity<?> findByQuery(@RequestBody SearchCriteriaDTO searchCriteria) {
-        Page<Cliente> clientes = vendaService.findByQuery(
-                searchCriteria.qtype(),
-                searchCriteria.query(),
-                searchCriteria.oper(),
-                searchCriteria.page(),
-                searchCriteria.rp(),
-                searchCriteria.sortname(),
-                searchCriteria.sortorder()
-        );
-        return ResponseEntity.ok(clientes);
+    @PutMapping("/update")
+    @DefaultOperation(summary = "Atualizar venda", description = "Atualiza uma venda", tags = {"Venda"})
+    public ResponseEntity<VendaDTO> updateVenda(@RequestBody @Valid UpdateVendaDTO updateVendaDTO) {
+        Venda venda = vendaService.update(updateVendaDTO);
+        VendaDTO vendaDTO = vendaService.convertToVendaDTO(venda);
+        return ResponseEntity.ok(vendaDTO);
     }
 
+    @DeleteMapping("/delete")
+    @DefaultOperation(summary = "Deletar venda", description = "Deleta uma venda", tags = {"Venda"})
+    public ResponseEntity<String> deleteVenda(@RequestParam Long id) {
+        vendaService.deleteVenda(id);
+        return ResponseEntity.ok(JsonUtil.createMessageJson("Venda deletada com sucesso e estoque desvolvido!", 200));
+    }
 }

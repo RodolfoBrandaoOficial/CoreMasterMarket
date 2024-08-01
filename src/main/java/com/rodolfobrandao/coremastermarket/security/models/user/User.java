@@ -19,7 +19,8 @@ import java.util.UUID;
 @Builder
 //@ToString
 @Data
-@NoArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -48,15 +49,15 @@ public class User implements UserDetails {
     @Override
     public String toString() {
         return "{\n" +
-                "            \"id\": \"" + id + "\",\n" +
-                "            \"login\": \"" + login + "\",\n" +
-                "            \"password\": \"" + password + "\",\n" +
-                "            \"role\": \"" + role + "\",\n" +
-                "            \"name\": \"" + name + "\",\n" +
-                "            \"fullname\": \"" + fullname + "\",\n" +
-                "            \"username\": \"" + username + "\",\n" +
-                "            \"profileImg\": " + profileImg + "\n" +
-                "        }";
+                "    \"id\": \"" + id + "\",\n" +
+                "    \"login\": \"" + login.toString() + "\",\n" +
+                "    \"password\": \"" + password + "\",\n" +
+                "    \"role\": \"" + role + "\",\n" +
+                "    \"name\": \"" + name + "\",\n" +
+                "    \"fullname\": \"" + fullname + "\",\n" +
+                "    \"username\": \"" + username + "\",\n" +
+                "    \"profileImg\": \"" + profileImg + "\"\n" +
+                "}";
     }
 
 
@@ -64,8 +65,8 @@ public class User implements UserDetails {
         return String.valueOf(this.id);
     }
 
-//    public User() {
-//    }
+    public User() {
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
