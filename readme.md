@@ -40,6 +40,26 @@ No frontend, foram demonstrados a autenticação e outros recursos avançados.
 É um prazer receber essa oportunidade da VR Software de poder exercer meu conhecimento em um teste magnífico como esse.
 
 ---
+## ▶️ Executando o Projeto
+
+Para executar o projeto, é necessário ter o Docker e o Docker Compose instalados na sua máquina.
+
+Executar o Docker
+1. Clone o repositório:
+
+```bash
+git clone https://github.com/RodolfoBrandaoOficial/CoreMasterMarket.git
+
+```
+Navegue até o diretório do projeto:
+```bash
+cd CoreMasterMarket/docker
+```
+Execute o comando Docker Compose para iniciar os contêineres:
+
+```bash
+docker-compose up --build
+```
 
 ## 🏃‍♂️ Como Rodar o Projeto
 
@@ -48,13 +68,15 @@ No frontend, foram demonstrados a autenticação e outros recursos avançados.
 - JDK 17+
 - Gradle Repository
 - PostgreSQL
+- [Postman Doc](https://documenter.getpostman.com/view/17799534/2sA3kdAxud)
+- Docker
 
 ### 🛠️ Configuração do Banco de Dados
 
 1. Crie um banco de dados PostgreSQL:
 ```sql
    CREATE DATABASE vrsoftware_db;
-```sql
+```
 
 Configure o application.properties para conectar ao banco de dados:
 properties
@@ -66,11 +88,12 @@ spring.jpa.hibernate.ddl-auto=update
 🚀 Rodando a Aplicação
 Clone o repositório:
 
-```sh
+
 Copiar código
+```sh
 git clone https://github.com/seu_usuario/seu_repositorio.git
 cd seu_repositorio/Application-Backend
-```sh
+```
 Compile e rode a aplicação:
 
 sh
@@ -78,7 +101,7 @@ Copiar código
 ```sh
 mvn clean install
 mvn spring-boot:run
-```sh
+```
 🌐 Acessando a Documentação Swagger
 Abra o navegador e acesse:
 http://localhost:8081/swagger-ui/index.html#/
@@ -90,7 +113,7 @@ Para rodar os testes unitários e de integração, use o seguinte comando:
 
 ```sh
 mvn test
-```sh
+```
 
 Se tiver alguma dúvida ou encontrar problemas, por favor, abra uma issue no repositório.
 
