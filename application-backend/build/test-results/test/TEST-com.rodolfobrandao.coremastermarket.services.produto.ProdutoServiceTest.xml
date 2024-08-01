@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rodolfobrandao.coremastermarket.services.produto.ProdutoServiceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2024-08-01T12:27:33" hostname="MacBook-Pro-de-Rodolfo.local" time="0.053">
+  <properties/>
+  <testcase name="testEnabledById()" classname="com.rodolfobrandao.coremastermarket.services.produto.ProdutoServiceTest" time="0.049"/>
+  <testcase name="testCreateProduto()" classname="com.rodolfobrandao.coremastermarket.services.produto.ProdutoServiceTest" time="0.001"/>
+  <testcase name="testFindById()" classname="com.rodolfobrandao.coremastermarket.services.produto.ProdutoServiceTest" time="0.001"/>
+  <testcase name="testDeleteById()" classname="com.rodolfobrandao.coremastermarket.services.produto.ProdutoServiceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

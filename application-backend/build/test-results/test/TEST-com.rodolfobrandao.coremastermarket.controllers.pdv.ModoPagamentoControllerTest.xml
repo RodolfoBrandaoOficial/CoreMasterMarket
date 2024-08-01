@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2024-08-01T12:27:32" hostname="MacBook-Pro-de-Rodolfo.local" time="0.043">
+  <properties/>
+  <testcase name="testGetModoPagamentoByIdNotFound()" classname="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" time="0.029"/>
+  <testcase name="testCreateModoPagamento()" classname="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" time="0.001"/>
+  <testcase name="testGetAllModoPagamentos()" classname="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" time="0.001"/>
+  <testcase name="testGetModoPagamentoById()" classname="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" time="0.001"/>
+  <testcase name="testDeleteModoPagamento()" classname="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" time="0.008"/>
+  <testcase name="testUpdateModoPagamento()" classname="com.rodolfobrandao.coremastermarket.controllers.pdv.ModoPagamentoControllerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

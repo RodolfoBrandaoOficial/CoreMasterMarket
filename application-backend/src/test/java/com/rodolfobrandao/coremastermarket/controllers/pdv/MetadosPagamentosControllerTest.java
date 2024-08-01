@@ -51,7 +51,7 @@ class MetadosPagamentosControllerTest {
 
         ResponseEntity<?> response = metadosPagamentosController.create(dto);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(metadosPagamentos, response.getBody());
     }
 

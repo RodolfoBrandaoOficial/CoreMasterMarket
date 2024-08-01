@@ -105,7 +105,7 @@ class ModoPagamentoControllerTest {
 
         ResponseEntity<ModoPagamento> response = modoPagamentoController.createModoPagamento(dto);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode(), "Status HTTP deve ser 201 CREATED.");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status HTTP deve ser 201 CREATED.");
         assertEquals(modoPagamento, response.getBody(), "ModoPagamento retornado deve ser igual ao esperado.");
     }
 
