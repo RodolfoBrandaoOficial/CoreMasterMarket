@@ -70,6 +70,20 @@ docker-compose up --build
 - PostgreSQL
 - [Postman Doc](https://documenter.getpostman.com/view/17799534/2sA3kdAxud)
 - Docker
+- Java Swing
+- Java SpringBoot
+- Java JpaRepository
+- Postgresql
+- Deploy ApiRestFull
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/ApiRestFull.png?raw=true" width="700px" />
+</div>
+
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/loginFrontEndFuncionalJavaSwing.png?raw=true" width="700px" />
+</div>
 
 ### 🛠️ Configuração do Banco de Dados
 
