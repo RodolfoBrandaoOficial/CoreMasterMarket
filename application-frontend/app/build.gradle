@@ -1,0 +1,72 @@
+plugins {
+    id 'application'
+    id 'java'
+    id 'io.freefair.lombok' version '6.6.2' // Plugin Lombok para Gradle
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JUnit Jupiter for testing.
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+
+    // JavaFX dependencies
+    implementation 'org.openjfx:javafx-controls:17.0.2'
+    implementation 'org.openjfx:javafx-fxml:17.0.2'
+    implementation 'org.openjfx:javafx-swing:17.0.2'
+
+    // JSON and other dependencies
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.json:json:20240303'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    // JPA and Lombok dependencies
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    implementation 'org.hibernate:hibernate-core:5.6.15.Final'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+
+    // Test dependencies
+    testImplementation 'junit:junit:4.13.2'
+
+  // Add the manually downloaded JAR.
+    implementation files('libs/AbsoluteLayout.jar')
+    implementation files('libs/KGradientPanel.jar')
+    implementation files('libs/KControls-2.0.jar')
+
+    implementation 'com.sparkjava:spark-core:2.9.4'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'javazoom:jlayer:1.0.1'
+    implementation 'com.google.cloud:google-cloud-texttospeech:2.42.0'
+//  implementation 'com.google.protobuf:protobuf-java:4.26.1'
+    implementation 'com.google.protobuf:protobuf-java:3.18.0'
+
+
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+application {
+    // Specify the main class for your application
+    mainClass.set('CoreMasterMarket.LoginMain')
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
