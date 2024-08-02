@@ -134,8 +134,8 @@ Clone o repositório:
 
 Copiar código
 ```sh
-git clone https://github.com/seu_usuario/seu_repositorio.git
-cd seu_repositorio/Application-Backend
+git clone https://github.com/RodolfoBrandaoOficial/CoreMasterMarket.git
+cd CoreMasterMarket/Application-Backend
 ```
 Compile e rode a aplicação:
 
