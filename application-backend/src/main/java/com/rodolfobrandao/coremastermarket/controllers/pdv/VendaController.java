@@ -22,6 +22,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/vendas")
+@CrossOrigin(origins = "*")
 public class VendaController {
 
     private final ClienteService clienteService;

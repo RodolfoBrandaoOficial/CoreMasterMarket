@@ -20,6 +20,15 @@ public class MetadosPagamentosController {
         this.metadosPagamentoService = metadosPagamentoService;
     }
 
+    /**
+     * This method is used to create a payment method.
+     *
+     * @param dto The dto.
+     * @return The payment method.
+     * @throws Exception If the payment method cannot be created.
+     * @version 1.0
+     * @since 1.0
+     */
     @PostMapping("/create")
     @DefaultOperation(summary = "Criar metado de pagamento", description = "Cria um novo metado de pagamento", tags = {"Metado de pagamento"})
     public ResponseEntity<?> create(@RequestBody CreateMetadosPagamentosDTO dto) {
@@ -30,6 +39,16 @@ public class MetadosPagamentosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar metado de pagamento: " + ex.getMessage());
         }
     }
+
+    /**
+     * This method is used to update a payment method.
+     *
+     * @param dto The dto.
+     * @return The payment method.
+     * @throws Exception If the payment method cannot be updated.
+     * @version 1.0
+     * @since 1.0
+     */
     @PutMapping("/update")
     @DefaultOperation(summary = "Atualizar metado de pagamento", description = "Atualiza um metado de pagamento", tags = {"Metado de pagamento"})
     public ResponseEntity<?> update(@RequestBody CreateMetadosPagamentosDTO dto) {
@@ -40,6 +59,16 @@ public class MetadosPagamentosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar metado de pagamento: " + ex.getMessage());
         }
     }
+
+    /**
+     * This method is used to delete a payment method.
+     *
+     * @param dto The dto.
+     * @return The payment method.
+     * @throws Exception If the payment method cannot be deleted.
+     * @version 1.0
+     * @since 1.0
+     */
     @DeleteMapping("/delete")
     @DefaultOperation(summary = "Deletar metado de pagamento", description = "Deleta um metado de pagamento", tags = {"Metado de pagamento"})
     public ResponseEntity<?> delete(@RequestBody DeleteMetadosPagamentosDTO dto) {
@@ -53,6 +82,15 @@ public class MetadosPagamentosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao deletar metado de pagamento: " + ex.getMessage());
         }
     }
+
+    /**
+     * This method is used to search for a payment method by id.
+     *
+     * @param id The id.
+     * @return The payment method.
+     * @version 1.0
+     * @since 1.0
+     */
     @GetMapping("/findAll")
     @DefaultOperation(summary = "Buscar todos os metados de pagamento", description = "Busca todos os metados de pagamento", tags = {"Metado de pagamento"})
     public ResponseEntity<?> findAll() {

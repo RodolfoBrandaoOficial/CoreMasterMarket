@@ -1,157 +1,205 @@
 package CoreMasterMarket.service;
 
-import CoreMasterMarket.gui.pdv.CupomFiscal;
-import static CoreMasterMarket.config.ConfigReal.GlobalToken;
-import CoreMasterMarket.gui.App;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.util.List;
+import java.awt.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class PDVService {
+import CoreMasterMarket.gui.pdv.CupomFiscal;
+import static CoreMasterMarket.config.ConfigReal.GlobalToken;
+import static CoreMasterMarket.config.ConfigReal.userName;
+import java.awt.event.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import com.google.gson.JsonObject;
 
-    public static JTextField txtCodBarras;
-    public static JTable tabelaProdutos;
-    public static DefaultTableModel tableModel;
-    public static List<JsonObject> produtos;
-    public static JLabel totalLabel;
-    public static double totalValue = 0.0;
-    public static long clienteId = -1;
-    public static JList<String> listSuggestions;
-    public static DefaultListModel<String> listModel;
-    public static int metodoPagamentoSelecionado = -1; // Método de pagamento selecionado
+public class PDVService extends javax.swing.JInternalFrame {
 
-    private App app;
+    private JTextField txtCodBarras;
+    private JTable tabelaProdutos;
+    private DefaultTableModel tableModel;
+    private List<JsonObject> produtos;
+    private JLabel totalLabel;
+    private double totalValue = 0.0;
+    private long clienteId = -1;
+    private JList<String> listSuggestions;
+    private DefaultListModel<String> listModel;
+    private int metodoPagamentoSelecionado = -1;
 
     public PDVService() {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new App().setVisible(false);
+        super("PDV - MERCADO CORE MASTER MARKT = ATENDIMENTO FEITO POR " + userName, true, true, true, true);
+        setSize(1030, 720);
+        setLayout(new BorderLayout());
+
+        produtos = new ArrayList<>();
+
+        // Solicita o código do cliente
+        String clienteInput = JOptionPane.showInputDialog("Digite o código do cliente:");
+        try {
+            clienteId = Long.parseLong(clienteInput);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Código do cliente inválido!");
+            System.exit(1);
+        }
+
+        // Inicializa o JTextField
+        txtCodBarras = new JTextField(20);
+        txtCodBarras.setToolTipText("Digite código de barras, descrição ou ID do produto");
+
+        // Inicializa a tabela de produtos
+        String[] colunas = {"ID", "Descrição", "Preço", "Quantidade"};
+        tableModel = new DefaultTableModel(colunas, 0);
+        tabelaProdutos = new JTable(tableModel);
+        tabelaProdutos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabelaProdutos.setFillsViewportHeight(true);
+
+        // Inicializa o JLabel para mostrar o valor total com destaque
+        totalLabel = new JLabel("Total: R$ 0.0");
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        totalLabel.setForeground(Color.RED);
+
+        // Inicializa o JList para sugestões
+        listModel = new DefaultListModel<>();
+        listSuggestions = new JList<>(listModel);
+        listSuggestions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listSuggestions.setVisibleRowCount(5);
+        listSuggestions.setBorder(BorderFactory.createTitledBorder("Sugestões"));
+
+        // Botões com ícones e ações
+        JButton btnAdicionar = createButton("F8 Adicionar", "add_icon.png", e -> adicionarProdutoSelecionado(), KeyEvent.VK_F8);
+        JButton btnAdicionarQuantidade = createButton("F9 Adicionar Quantidade", "quantity_icon.png", e -> adicionarQuantidadeProduto(), KeyEvent.VK_F9);
+        JButton btnMetodoPagamento = createButton("F10 Método de Pagamento", "payment_icon.png", e -> selecionarMetodoPagamento(), KeyEvent.VK_F10);
+        JButton btnExcluir = createButton("F11 Excluir Produto", "delete_icon.png", e -> excluirProduto(), KeyEvent.VK_F11);
+        JButton btnFinalizarVenda = createButton("F12 Finalizar Venda", "finish_icon.png", e -> finalizarVenda(), KeyEvent.VK_F12);
+
+        // Layout da interface
+        JPanel inputPanel = new JPanel(new GridLayout(1, 6, 10, 10));
+        inputPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        inputPanel.add(txtCodBarras);
+        inputPanel.add(btnAdicionar);
+        inputPanel.add(btnAdicionarQuantidade);
+        inputPanel.add(btnMetodoPagamento);
+        inputPanel.add(btnExcluir);
+        inputPanel.add(btnFinalizarVenda);
+
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(new JScrollPane(tabelaProdutos), BorderLayout.CENTER);
+        centerPanel.add(new JScrollPane(listSuggestions), BorderLayout.EAST);
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        bottomPanel.add(totalLabel);
+
+        add(inputPanel, BorderLayout.NORTH);
+        add(centerPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        // Carrega os produtos
+        carregarProdutos();
+
+        // Adiciona um KeyListener para buscar enquanto digita
+        txtCodBarras.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    adicionarProdutoSelecionado();
+                } else if (e.getKeyCode() == KeyEvent.VK_F7) {
+                    adicionarQuantidadeProduto();
+                } else if (e.getKeyCode() == KeyEvent.VK_F8) {
+                    excluirProduto();
+                } else {
+                    buscarProduto(txtCodBarras.getText());
+                }
             }
         });
 
-//        produtos = new ArrayList<>();
-//
-//        // Solicita o código do cliente
-//        String clienteInput = JOptionPane.showInputDialog("Digite o código do cliente:");
-//        try {
-//            clienteId = Long.parseLong(clienteInput);
-//        } catch (NumberFormatException e) {
-//            JOptionPane.showMessageDialog(null, "Código do cliente inválido!");
-//            System.exit(1);
-//        }
-//
-//        // Inicializa o JTextField
-//        txtCodBarras = new JTextField(20);
-//        txtCodBarras.setToolTipText("Digite código de barras, descrição ou ID do produto");
-//
-//        // Inicializa a tabela de produtos
-//        String[] colunas = {"ID", "Descrição", "Preço", "Quantidade"};
-//        tableModel = new DefaultTableModel(colunas, 0);
-//        tabelaProdutos = new JTable(tableModel);
-//        tabelaProdutos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//
-//        // Inicializa o JLabel para mostrar o valor total
-//        totalLabel = new JLabel("Total: R$ 0.0");
-//
-//        // Inicializa o JList para sugestões
-//        listModel = new DefaultListModel<>();
-//        listSuggestions = new JList<>(listModel);
-//        listSuggestions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        listSuggestions.setVisibleRowCount(5);
-//        listSuggestions.setBorder(BorderFactory.createTitledBorder("Sugestões"));
-//
-//        // Botão Adicionar
-//        JButton btnAdicionar = new JButton("Adicionar");
-//        btnAdicionar.addActionListener(e -> adicionarProdutoSelecionado());
-//
-//        // Botão Adicionar Quantidade
-//        JButton btnAdicionarQuantidade = new JButton("Adicionar Quantidade");
-//        btnAdicionarQuantidade.addActionListener(e -> adicionarQuantidadeProduto());
-//
-//        // Botão Método de Pagamento
-//        JButton btnMetodoPagamento = new JButton("Método de Pagamento");
-//        btnMetodoPagamento.addActionListener(e -> selecionarMetodoPagamento());
-//
-//        // Botão Excluir Produto
-//        JButton btnExcluir = new JButton("Excluir Produto");
-//        btnExcluir.addActionListener(e -> excluirProduto());
-//
-//        // Botão Finalizar Venda
-//        JButton btnFinalizarVenda = new JButton("Finalizar Venda");
-//        btnFinalizarVenda.addActionListener(e -> finalizarVenda());
-//
-//        // Layout da interface
-//        JPanel panel = new JPanel(new BorderLayout());
-//        JPanel inputPanel = new JPanel();
-//        inputPanel.add(txtCodBarras);
-//        inputPanel.add(btnAdicionar);
-//        inputPanel.add(btnAdicionarQuantidade);
-//        inputPanel.add(btnMetodoPagamento);
-//        inputPanel.add(btnExcluir);
-//        inputPanel.add(btnFinalizarVenda);
-//
-//        JPanel centerPanel = new JPanel(new BorderLayout());
-//        centerPanel.add(new JScrollPane(tabelaProdutos), BorderLayout.CENTER);
-//        centerPanel.add(new JScrollPane(listSuggestions), BorderLayout.EAST);
-//
-//        panel.add(inputPanel, BorderLayout.NORTH);
-//        panel.add(centerPanel, BorderLayout.CENTER);
-//        panel.add(totalLabel, BorderLayout.SOUTH);
-//
-//        // Criação do JFrame
-//        JFrame frame = new JFrame("PDV - Lista de Produtos");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.getContentPane().add(panel);
-//        frame.pack();
-//        frame.setVisible(true);
-//
-//        // Carrega os produtos
-//        carregarProdutos();
-//
-//        // Adiciona um KeyListener para buscar enquanto digita
-//        txtCodBarras.addKeyListener(new KeyAdapter() {
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-//                    adicionarProdutoSelecionado();
-//                } else if (e.getKeyCode() == KeyEvent.VK_F7) {
-//                    adicionarQuantidadeProduto();
-//                } else if (e.getKeyCode() == KeyEvent.VK_F8) {
-//                    excluirProduto();
-//                } else {
-//                    buscarProduto(txtCodBarras.getText());
-//                }
-//            }
-//        });
+        // Adiciona um ListSelectionListener para o JList
+        listSuggestions.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedValue = listSuggestions.getSelectedValue();
+                if (selectedValue != null) {
+                    txtCodBarras.setText(selectedValue.split(" - ")[0]);
+                }
+            }
+        });
 
-//        // Adiciona um ListSelectionListener para o JList
-//        listSuggestions.addListSelectionListener(e -> {
-//            if (!e.getValueIsAdjusting()) {
-//                String selectedValue = listSuggestions.getSelectedValue();
-//                if (selectedValue != null) {
-//                    txtCodBarras.setText(selectedValue.split(" - ")[0]);
-//                }
-//            }
-//        });
-//    }
+        // Configura o comportamento do fechamento do JInternalFrame
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
-    public void carregarProdutos() {
+    private JButton createButton(String text, String iconName, ActionListener actionListener, int keyCode) {
+        JButton button = new JButton(text);
+        try {
+            URL iconUrl = getClass().getResource("/icons/" + iconName);
+            if (iconUrl != null) {
+                button.setIcon(new ImageIcon(iconUrl));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        button.addActionListener(actionListener);
+        button.setPreferredSize(new Dimension(150, 40));
+        setKeyAction(button, keyCode);
+        return button;
+    }
+
+    private void setKeyAction(JButton button, int keyCode) {
+        // Cria uma ação para o botão
+        Action action = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                button.doClick(); // Simula o clique no botão
+            }
+        };
+
+        // Configura o mapa de ações e a tecla de atalho
+        InputMap inputMap = button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(KeyStroke.getKeyStroke(keyCode, 0), button.getActionCommand());
+        button.getActionMap().put(button.getActionCommand(), action);
+    }
+
+
+    private JButton createButton(String text, String iconName, java.awt.event.ActionListener actionListener) {
+        JButton button = new JButton(text);
+        try {
+            URL iconUrl = getClass().getResource("/icons/" + iconName);
+            if (iconUrl != null) {
+                button.setIcon(new ImageIcon(iconUrl));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        button.addActionListener(actionListener);
+        button.setPreferredSize(new Dimension(150, 40));
+        return button;
+    }
+
+    private JButton createIconButton(String text, String iconPath, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.setIcon(new ImageIcon(getClass().getResource(iconPath)));
+        button.addActionListener(actionListener);
+        button.setMargin(new Insets(2, 2, 2, 2));
+        button.setPreferredSize(new Dimension(160, 40));
+        return button;
+    }
+public void carregarProdutos() {
         try {
             URL url = new URL("http://localhost:8081/api/v1/produtos/list");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -202,12 +250,12 @@ public class PDVService {
     }
 
     public void adicionarProdutoSelecionado() {
-        String text = app.txtCodBarras.getText();
+        String text = txtCodBarras.getText();
         for (JsonObject produto : produtos) {
             String codigoBarras = produto.get("codigoBarras").getAsString();
             if (text.startsWith(codigoBarras)) {
                 adicionarProdutoATabela(produto);
-                app.txtCodBarras.setText("");
+                txtCodBarras.setText("");
                 listModel.clear();
                 break;
             }
@@ -215,7 +263,7 @@ public class PDVService {
     }
 
     public void adicionarQuantidadeProduto() {
-        String text = app.txtCodBarras.getText();
+        String text = txtCodBarras.getText();
         for (JsonObject produto : produtos) {
             String codigoBarras = produto.get("codigoBarras").getAsString();
             if (text.startsWith(codigoBarras)) {
@@ -223,7 +271,7 @@ public class PDVService {
                 try {
                     double quantidade = Double.parseDouble(quantidadeStr);
                     adicionarProdutoATabela(produto, quantidade);
-                    app.txtCodBarras.setText("");
+                    txtCodBarras.setText("");
                     listModel.clear();
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Quantidade inválida!");
@@ -266,11 +314,11 @@ public class PDVService {
             double quantidade = (double) tableModel.getValueAt(i, 3);
             totalValue += preco * quantidade;
         }
-        app.totalLabel.setText(String.format("Total: R$ %.2f", totalValue));
+        totalLabel.setText(String.format("Total: R$ %.2f", totalValue));
     }
 
     public void excluirProduto() {
-        int rowIndex = app.tabelaProdutos.getSelectedRow();
+        int rowIndex = tabelaProdutos.getSelectedRow();
         if (rowIndex != -1) {
             String senhaFiscal = JOptionPane.showInputDialog("Digite a senha do Fiscal para excluir o produto:");
             // Aqui você pode verificar a senha fiscal com o banco de dados ou qualquer outro sistema de autenticação
@@ -698,7 +746,7 @@ public class PDVService {
         frame.getContentPane().removeAll();
         frame.repaint();
     }
-//    public static void main(String[] args) {
+//    public static void main(String[] args) {;
 //        SwingUtilities.invokeLater(PDVService::new);
 //    }
 }

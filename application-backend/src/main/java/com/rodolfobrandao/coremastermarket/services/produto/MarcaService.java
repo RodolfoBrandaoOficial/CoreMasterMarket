@@ -20,11 +20,26 @@ public class MarcaService {
         this.marcaRepository = marcaRepository;
     }
 
+    /**
+     * Lista todas as marcas
+     *
+     * @param page
+     * @param size
+     * @param sortname
+     * @param sortorder
+     * @return
+     */
     public Page<Marca> findAll(int page, int size, String sortname, String sortorder) {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.fromString(sortorder), sortname));
         return marcaRepository.findAll(pageRequest);
     }
 
+    /**
+     * Cria uma nova marca
+     *
+     * @param createMarcaDTO
+     * @return
+     */
     public Marca create(CreateMarcaDTO createMarcaDTO) {
         try {
             Marca marca = new Marca();
@@ -36,6 +51,12 @@ public class MarcaService {
         }
     }
 
+    /**
+     * Busca uma marca pelo id
+     *
+     * @param id
+     * @return
+     */
     public Marca findById(Long id) {
         try {
             return marcaRepository.findById(id).orElse(null);
@@ -44,6 +65,12 @@ public class MarcaService {
         }
     }
 
+    /**
+     * Deleta uma marca pelo id
+     *
+     * @param id
+     * @return
+     */
     public ResponseEntity delete(Long id) {
         try {
             Marca marca = marcaRepository.findById(id).orElse(null);
@@ -57,6 +84,13 @@ public class MarcaService {
         }
     }
 
+    /**
+     * Atualiza uma marca pelo id
+     *
+     * @param id
+     * @param dto
+     * @return
+     */
     public Marca update(Long id, CreateMarcaDTO dto) {
         try {
             Marca marca = marcaRepository.findById(id).orElse(null);

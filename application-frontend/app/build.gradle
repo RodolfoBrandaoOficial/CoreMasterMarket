@@ -22,6 +22,8 @@ dependencies {
     implementation 'org.json:json:20240303'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.guava:guava:31.1-jre'
+implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+
 
     // JPA and Lombok dependencies
     implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'

@@ -1,16 +1,16 @@
 package com.rodolfobrandao.coremastermarket.controllers.produto;
 
 import com.rodolfobrandao.coremastermarket.dtos.cliente.SearchCriteriaDTO;
+import com.rodolfobrandao.coremastermarket.dtos.pdv.ReadCodigoBarrasDTO;
 import com.rodolfobrandao.coremastermarket.dtos.produto.CreateProdutoDTO;
 import com.rodolfobrandao.coremastermarket.dtos.produto.DeleteProdutoDTO;
-import com.rodolfobrandao.coremastermarket.dtos.pdv.ReadCodigoBarrasDTO;
 import com.rodolfobrandao.coremastermarket.dtos.produto.UpdateProdutoDTO;
 import com.rodolfobrandao.coremastermarket.entities.produto.Produto;
 import com.rodolfobrandao.coremastermarket.services.produto.ProdutoService;
 import com.rodolfobrandao.coremastermarket.tools.JsonUtil;
-import com.rodolfobrandao.coremastermarket.tools.entities.PaginatedResponse;
 import com.rodolfobrandao.coremastermarket.tools.PaginationRequestDTO;
 import com.rodolfobrandao.coremastermarket.tools.PaginationUtils;
+import com.rodolfobrandao.coremastermarket.tools.entities.PaginatedResponse;
 import com.rodolfobrandao.coremastermarket.tools.swagger.DefaultOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +34,12 @@ public class ProdutoController {
 
     }
 
+    /**
+     * Lista todos os produtos
+     *
+     * @param paginationRequest
+     * @return
+     */
     @PostMapping("/list")
     @DefaultOperation(summary = "Listar produtos", description = "Lista todos os produtos", tags = {"Produto"})
     public ResponseEntity<?> ListarProdutos(@RequestBody PaginationRequestDTO paginationRequest) {
@@ -51,6 +57,12 @@ public class ProdutoController {
         }
     }
 
+    /**
+     * Busca produtos por critérios
+     *
+     * @param searchCriteria
+     * @return
+     */
     @PostMapping("/findByQuery")
     @DefaultOperation(summary = "Buscar produtos", description = "Busca produtos por critérios", tags = {"Produto"})
     public ResponseEntity<?> findByQuery(@RequestBody SearchCriteriaDTO searchCriteria) {
@@ -71,6 +83,12 @@ public class ProdutoController {
         }
     }
 
+    /**
+     * Cria um novo produto
+     *
+     * @param dto
+     * @return
+     */
     @PostMapping("/create")
     @DefaultOperation(summary = "Criar produto", description = "Cria um novo produto", tags = {"Produto"})
     public ResponseEntity<String> createProduto(@RequestBody CreateProdutoDTO dto) {
@@ -82,6 +100,12 @@ public class ProdutoController {
         }
     }
 
+    /**
+     * Cria vários produtos
+     *
+     * @param dtos
+     * @return
+     */
     @PostMapping("/createMultiple")
     @DefaultOperation(summary = "Criar produtos", description = "Cria vários produtos", tags = {"Produto"})
     public ResponseEntity<?> createMultipleProdutos(@RequestBody List<CreateProdutoDTO> dtos) {
@@ -93,6 +117,12 @@ public class ProdutoController {
         }
     }
 
+    /**
+     * Busca um produto por ID
+     *
+     * @param deleteProdutoDTO
+     * @return
+     */
     @GetMapping("/findById")
     @DefaultOperation(summary = "Buscar produto por ID", description = "Busca um produto pelo ID", tags = {"Produto"})
     public ResponseEntity<?> findById(@RequestBody DeleteProdutoDTO deleteProdutoDTO) {
@@ -107,6 +137,12 @@ public class ProdutoController {
         }
     }
 
+    /**
+     * Busca um produto por código de barras
+     *
+     * @param readCodigoBarrasDTO
+     * @return
+     */
     @PostMapping("/findByCodigoBarras")
     @DefaultOperation(summary = "Buscar produto por código de barras", description = "Busca um produto pelo código de barras", tags = {"Produto"})
     public ResponseEntity<?> findByCodigoBarras(@RequestBody ReadCodigoBarrasDTO readCodigoBarrasDTO) {
@@ -121,6 +157,13 @@ public class ProdutoController {
             return ResponseEntity.status(500).body(ex.getMessage());
         }
     }
+
+    /**
+     * Deleta um produto
+     *
+     * @param deleteProdutoDTO
+     * @return
+     */
 
     @DeleteMapping("/delete")
     @DefaultOperation(summary = "Deletar produto", description = "Deleta um produto", tags = {"Produto"})
@@ -149,6 +192,12 @@ public class ProdutoController {
         }
     }
 
+    /**
+     * Ativa um produto
+     *
+     * @param deleteProdutoDTO
+     * @return
+     */
     @PutMapping("/enabled")
     @DefaultOperation(summary = "Ativar produto", description = "Ativa um produto", tags = {"Produto"})
     public ResponseEntity<?> enabledProduto(@RequestBody DeleteProdutoDTO deleteProdutoDTO) {
@@ -176,7 +225,12 @@ public class ProdutoController {
         }
     }
 
-
+    /**
+     * Desativa um produto
+     * @param deleteProdutoDTO
+     * @param dto
+     * @return
+     */
     @PutMapping("/update")
     @DefaultOperation(summary = "Atualizar produto", description = "Atualiza um produto", tags = {"Produto"})
     public ResponseEntity<Produto> updateProduto(@RequestBody UpdateProdutoDTO dto) {

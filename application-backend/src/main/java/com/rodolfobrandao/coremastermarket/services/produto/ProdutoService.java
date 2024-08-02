@@ -8,7 +8,6 @@ import com.rodolfobrandao.coremastermarket.repositories.produto.MarcaRepository;
 import com.rodolfobrandao.coremastermarket.repositories.produto.ProdutoRepository;
 import com.rodolfobrandao.coremastermarket.tools.CustomException;
 import com.rodolfobrandao.coremastermarket.tools.JsonUtil;
-import io.swagger.v3.core.util.Json;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,21 +35,50 @@ public class ProdutoService {
         this.marcaRepository = marcaRepository;
     }
 
+    /**
+     * Lista todos os produtos
+     *
+     * @param page
+     * @param size
+     * @param sortname
+     * @param sortorder
+     * @return
+     */
     public Page<Produto> findAll(int page, int size, String sortname, String sortorder) {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.fromString(sortorder), sortname));
         return produtoRepository.findAll(pageRequest);
     }
 
+    /**
+     * Busca um produto pelo id
+     *
+     * @param id
+     * @return
+     */
     public Produto findById(Long id) {
         return produtoRepository.findById(id).orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Produto não encontrado", 404)));
 
     }
 
+
+    /**
+     * Busca um produto pelo código de barras
+     *
+     * @param codigoBarras
+     * @return
+     */
     public Optional<Produto> findByCodigoBarras(String codigoBarras) {
 
         return produtoRepository.findByCodigoBarras(codigoBarras);
 
     }
+
+    /**
+     * Deleta um produto pelo id
+     *
+     * @param id
+     * @return
+     */
 
     public Produto deleteById(Long id) {
         try {
@@ -64,6 +92,12 @@ public class ProdutoService {
         }
     }
 
+    /**
+     * Habilita um produto pelo id
+     *
+     * @param id
+     * @return
+     */
     public Produto enabledById(Long id) {
         try {
             Produto produto = produtoRepository.findById(id)
@@ -76,13 +110,18 @@ public class ProdutoService {
         }
     }
 
-
+    /**
+     * Cria um novo produto
+     *
+     * @param createProdutoDTO
+     * @return
+     */
     public Produto create(CreateProdutoDTO createProdutoDTO) {
         try {
             Marca marca = marcaRepository.findById(createProdutoDTO.marca())
                     .orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Marca não encontrada", 404)));
             Produto produto = new Produto(createProdutoDTO.precoVenda(), createProdutoDTO.codigoBarras(), createProdutoDTO.tipoEmbalagem(), createProdutoDTO.descricao(), BigDecimal.valueOf(createProdutoDTO.quantidade()), createProdutoDTO.criadoEm() == null ? dataAtualTime : createProdutoDTO.criadoEm(), marca, createProdutoDTO.ativo());
-            if(produtoRepository.findByCodigoBarras(produto.getCodigoBarras()).isPresent()){
+            if (produtoRepository.findByCodigoBarras(produto.getCodigoBarras()).isPresent()) {
                 throw new RuntimeException(JsonUtil.createMessageJson("Código de barras já cadastrado", 400));
             }
             return produtoRepository.save(produto);
@@ -91,6 +130,12 @@ public class ProdutoService {
         }
     }
 
+    /**
+     * Reduz a quantidade de estoque de um produto
+     *
+     * @param produtoId
+     * @param quantidade
+     */
     public void reduzirEstoque(Long produtoId, BigDecimal quantidade) {
         try {
             Produto produto = produtoRepository.findById(produtoId)
@@ -108,6 +153,12 @@ public class ProdutoService {
         }
     }
 
+    /**
+     * Devolve a quantidade de estoque de um produto
+     *
+     * @param produtoId
+     * @param quantidade
+     */
     public void devolverEstoque(Long produtoId, BigDecimal quantidade) {
         try {
             Produto produto = produtoRepository.findById(produtoId)
@@ -121,7 +172,12 @@ public class ProdutoService {
         }
     }
 
-
+    /**
+     * Cria vários produtos
+     *
+     * @param dtos
+     * @return
+     */
     public Map<String, List<Produto>> createMultiple(List<CreateProdutoDTO> dtos) {
         List<Produto> produtosCriados = new ArrayList<>();
         List<Produto> produtosIgnorados = new ArrayList<>();
@@ -133,7 +189,7 @@ public class ProdutoService {
                 continue;
             }
 
-            Marca marca = marcaRepository.findById(dto.marca()).orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Marca não encontrada", 404)))    ;
+            Marca marca = marcaRepository.findById(dto.marca()).orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Marca não encontrada", 404)));
 
             Produto produto = new Produto(dto.precoVenda(), dto.codigoBarras(), dto.tipoEmbalagem(), dto.descricao(), BigDecimal.valueOf(dto.quantidade()), dto.criadoEm() == null ? dataAtualTime : dto.criadoEm(), marca, dto.ativo());
             produtosCriados.add(produtoRepository.save(produto));
@@ -160,11 +216,31 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    /**
+     * Busca produtos por query
+     *
+     * @param qtype
+     * @param query
+     * @param oper
+     * @param page
+     * @param size
+     * @param sortname
+     * @param sortorder
+     * @return
+     */
     public Page<Produto> findByQuery(String qtype, String query, String oper, int page, int size, String sortname, String sortorder) {
-        PageRequest pageRequest = PageRequest.of(page -1, size, Sort.by(Sort.Direction.fromString(sortorder), sortname));
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.fromString(sortorder), sortname));
         return produtoRepository.findAll(pageRequest);
     }
 
+    /**
+     * Atualiza o estoque de um produto
+     * <p>
+     * Atualiza a quantidade de um produto em estoque
+     *
+     * @param produtoId
+     * @param quantidadeVendida
+     */
     @Transactional
     public void atualizarEstoque(Long produtoId, BigDecimal quantidadeVendida) {
         Produto produto = produtoRepository.findById(produtoId)

@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/clientes")
+@CrossOrigin(origins = "*")
 public class ClienteController {
     private final ClienteService clienteService;
 
@@ -45,9 +46,19 @@ public class ClienteController {
         }
     }
 
+    /**
+     * This method is used to disable ou enable a client.
+     *
+     * @param deleteClienteDTO The dto.
+     * @return The client.
+     * @throws Exception If the client cannot be updated.
+     * @version 1.0
+     * @since 1.0
+     */
+
     @PutMapping("/enabled")
     @DefaultOperation(summary = "Habilitar cliente", description = "Habilita um cliente", tags = {"Cliente"})
-    public ResponseEntity<?> habilitarCliente(@RequestBody DeleteClienteDTO deleteClienteDTO){
+    public ResponseEntity<?> habilitarCliente(@RequestBody DeleteClienteDTO deleteClienteDTO) {
         try {
             clienteService.findById(deleteClienteDTO.id());
             return ResponseEntity.ok(JsonUtil.createMessageJson("Cliente habilitado com sucesso", 200));
@@ -57,7 +68,7 @@ public class ClienteController {
         }
     }
 
-                                              /**
+    /**
      * This method is used to search for a client by a query.
      *
      * @param searchCriteria The search criteria.
@@ -66,8 +77,8 @@ public class ClienteController {
      * @since 1.0
      */
 
-                                              @PostMapping("/findByQuery")
-                                              @DefaultOperation(summary = "Pesquisar clientes", description = "Pesquisa por clientes", tags = {"Cliente"})
+    @PostMapping("/findByQuery")
+    @DefaultOperation(summary = "Pesquisar clientes", description = "Pesquisa por clientes", tags = {"Cliente"})
     public Page<Cliente> findByQuery(@RequestBody SearchCriteriaDTO searchCriteria) {
         try {
             return clienteService.findByQuery(
@@ -123,6 +134,16 @@ public class ClienteController {
     public Cliente cadastrarCliente(@RequestBody CreateClienteItemDTO dto) {
         return clienteService.create(dto);
     }
+
+    /**
+     * This method is used to update a client.
+     *
+     * @param dto The dto.
+     * @return The client.
+     * @throws Exception If the client cannot be updated.
+     * @version 1.0
+     * @since 1.0
+     */
 
     @PutMapping("/update")
     @DefaultOperation(summary = "Atualizar cliente", description = "Atualiza um cliente", tags = {"Cliente"})
