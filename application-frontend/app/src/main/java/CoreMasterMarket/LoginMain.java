@@ -359,6 +359,7 @@ public class LoginMain extends javax.swing.JDialog {
             ConfigReal.setUserFullname(userInfoJsonResponse.get("fullname").getAsString());
             ConfigReal.setUserUsername(userInfoJsonResponse.get("username").getAsString());
             ConfigReal.setUserProfileImg(userInfoJsonResponse.has("profileImg") ? userInfoJsonResponse.get("profileImg").getAsString() : "");
+            ConfigReal.setToken(tokenAPI);
 
             // Exibir mensagem de sucesso e as informações do usuário
             JOptionPane.showMessageDialog(this, "Login bem-sucedido! " + ConfigReal.getUserFullname());

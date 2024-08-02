@@ -3,8 +3,8 @@ package CoreMasterMarket.config;
 public class ConfigReal {
 
     public static final String urlAPI = "http://localhost:8081";
-    public static final String GlobalToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2RvbGZvYnJhbmRhbyIsImlzcyI6ImF1dGgtYXBpIiwiZXhwIjoxNzIyNjE0NDQ0LCJ1c2VySWQiOiJkNjY1NWUwZC1hOTIxLTQ2ZTMtYjM2Ny04NzZmMDA0NjdkYWQifQ.S6MOhV8qpYMg2AMxmbppBzQ6Y_lGBxaMpV_74rbIZTk";
     public static String token;
+    public static String GlobalToken;
     public static String userId;
     public static String userLogin;
     public static String userPassword;
@@ -21,6 +21,7 @@ public class ConfigReal {
 
     public static void setToken(String token) {
         ConfigReal.token = token;
+        GlobalToken = token;
     }
 
     public static String getUserId() {

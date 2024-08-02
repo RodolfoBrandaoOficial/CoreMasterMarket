@@ -1,5 +1,7 @@
 package CoreMasterMarket.service;
 
+import CoreMasterMarket.config.ConfigReal;
+import static CoreMasterMarket.config.ConfigReal.GlobalToken;
 import javax.swing.*;
 import java.awt.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,7 +22,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import CoreMasterMarket.gui.pdv.CupomFiscal;
-import static CoreMasterMarket.config.ConfigReal.GlobalToken;
+import static CoreMasterMarket.config.ConfigReal.token;
 import static CoreMasterMarket.config.ConfigReal.userName;
 import java.awt.event.*;
 import java.net.URL;
@@ -175,7 +177,6 @@ public class PDVService extends javax.swing.JInternalFrame {
         button.getActionMap().put(button.getActionCommand(), action);
     }
 
-
     private JButton createButton(String text, String iconName, java.awt.event.ActionListener actionListener) {
         JButton button = new JButton(text);
         try {
@@ -199,11 +200,13 @@ public class PDVService extends javax.swing.JInternalFrame {
         button.setPreferredSize(new Dimension(160, 40));
         return button;
     }
-public void carregarProdutos() {
+
+    public void carregarProdutos() {
         try {
             URL url = new URL("http://localhost:8081/api/v1/produtos/list");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
+            System.err.println("TOKEN: " + token + "TOKENGLOBAL: " + GlobalToken + "TOEKN2" + ConfigReal.token);
             connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setDoOutput(true);
@@ -374,11 +377,9 @@ public void carregarProdutos() {
         // Substitua o ID do cliente e o token de autenticação conforme necessário
         int clienteId = 1; // ID do cliente
         String url = "http://localhost:8081/api/v1/clientes/buscar/" + clienteId;
-        String authToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2RvbGZvYnJhbmRhbyIsImlzcyI6ImF1dGgtYXBpIiwiZXhwIjoxNzIyNTM1ODI4LCJ1c2VySWQiOiJkNjY1NWUwZC1hOTIxLTQ2ZTMtYjM2Ny04NzZmMDA0NjdkYWQifQ.DHyMs5vIUaitJ0Hj5SMWnER9Ez9EFuP8Cn5uisK0N-g";
-
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(url);
-            request.addHeader("Authorization", "Bearer " + authToken);
+            request.addHeader("Authorization", "Bearer " + GlobalToken);
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
