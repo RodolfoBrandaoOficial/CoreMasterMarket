@@ -1,151 +1,293 @@
 package CoreMasterMarket.service;
 
+import javax.swing.*;
+import java.awt.*;
 import static CoreMasterMarket.config.ConfigReal.GlobalToken;
+import static CoreMasterMarket.config.ConfigReal.urlAPI;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+public class ProdutoService extends javax.swing.JInternalFrame {
 
-public class ProdutoService  extends javax.swing.JInternalFrame {
+    private JTextField txtCodigoBarras;
+    private JTextField txtDescricao;
+    private JTextField txtPrecoMin;
+    private JTextField txtPrecoMax;
+    private JTable tabelaProdutos;
+    private DefaultTableModel tableModel;
+    private JButton btnDeletarProduto;
+    private JButton btnEditarProduto;
 
-    private static final String API_BASE_URL = "http://localhost:8081/api/v1/produtos";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_TOKEN = "Bearer " + GlobalToken;
-    private static final String CONTENT_TYPE_HEADER = "Content-Type";
-    private static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
+    public ProdutoService() {
+        super("Consulta de Produtos", true, true, true, true);
+        setSize(900, 600);
+        setLayout(new BorderLayout());
 
-    private static final Gson gson = new Gson();
+        // Painel de filtros de busca
+        JPanel filterPanel = new JPanel(new GridLayout(2, 4, 10, 10));
+        filterPanel.setBorder(BorderFactory.createTitledBorder("Filtros de Busca"));
 
-    public JsonObject listarProdutos(int page, int size, String sortname, String sortorder) throws Exception {
-        URL url = new URL(API_BASE_URL + "/list");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty(AUTHORIZATION_HEADER, BEARER_TOKEN);
-        connection.setRequestProperty(CONTENT_TYPE_HEADER, CONTENT_TYPE_JSON);
-        connection.setDoOutput(true);
+        txtCodigoBarras = new JTextField();
+        txtDescricao = new JTextField();
+        txtPrecoMin = new JTextField();
+        txtPrecoMax = new JTextField();
 
-        JsonObject requestJson = new JsonObject();
-        requestJson.addProperty("page", page);
-        requestJson.addProperty("size", size);
-        requestJson.addProperty("sortname", sortname);
-        requestJson.addProperty("sortorder", sortorder);
+        filterPanel.add(new JLabel("Código de Barras:"));
+        filterPanel.add(txtCodigoBarras);
+        filterPanel.add(new JLabel("Descrição:"));
+        filterPanel.add(txtDescricao);
+        filterPanel.add(new JLabel("Preço Mínimo:"));
+        filterPanel.add(txtPrecoMin);
+        filterPanel.add(new JLabel("Preço Máximo:"));
+        filterPanel.add(txtPrecoMax);
 
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(requestJson.toString().getBytes("UTF-8"));
-            os.flush();
-        }
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                return JsonParser.parseReader(br).getAsJsonObject();
+        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buscarProdutos();
             }
-        } else {
-            throw new RuntimeException("Failed to list products: HTTP error code : " + responseCode);
-        }
+        });
+
+        filterPanel.add(btnBuscar);
+
+        // Inicializa a tabela de produtos
+        String[] colunas = {"ID", "Código de Barras", "Descrição", "Preço de Venda", "Tipo de Embalagem", "Quantidade", "Marca", "Ativo"};
+        tableModel = new DefaultTableModel(colunas, 0);
+        tabelaProdutos = new JTable(tableModel);
+        tabelaProdutos.setFillsViewportHeight(true);
+        tabelaProdutos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Adiciona um listener para habilitar/desabilitar os botões de deletar e editar
+        tabelaProdutos.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                boolean rowSelected = tabelaProdutos.getSelectedRow() != -1;
+                btnDeletarProduto.setEnabled(rowSelected);
+                btnEditarProduto.setEnabled(rowSelected);
+            }
+        });
+
+        // Painel central para a tabela de produtos
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(new JScrollPane(tabelaProdutos), BorderLayout.CENTER);
+
+        // Botão de deletar produto
+        btnDeletarProduto = new JButton("Deletar Produto");
+        btnDeletarProduto.setEnabled(false);
+        btnDeletarProduto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deletarProdutoSelecionado();
+            }
+        });
+
+        // Botão de editar produto
+        btnEditarProduto = new JButton("Editar Produto");
+        btnEditarProduto.setEnabled(false);
+        btnEditarProduto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editarProdutoSelecionado();
+            }
+        });
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(btnDeletarProduto);
+        bottomPanel.add(btnEditarProduto);
+
+        add(filterPanel, BorderLayout.NORTH);
+        add(centerPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    public JsonObject criarProduto(JsonObject produto) throws Exception {
-        URL url = new URL(API_BASE_URL + "/create");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty(AUTHORIZATION_HEADER, BEARER_TOKEN);
-        connection.setRequestProperty(CONTENT_TYPE_HEADER, CONTENT_TYPE_JSON);
-        connection.setDoOutput(true);
+    private void buscarProdutos() {
+        String codigoBarras = txtCodigoBarras.getText();
+        String descricao = txtDescricao.getText();
+        String precoMin = txtPrecoMin.getText();
+        String precoMax = txtPrecoMax.getText();
 
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(produto.toString().getBytes("UTF-8"));
-            os.flush();
-        }
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 201) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                return JsonParser.parseReader(br).getAsJsonObject();
-            }
-        } else {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
-                return JsonParser.parseReader(br).getAsJsonObject();
-            }
-        }
-    }
-
-    public JsonObject deletarProduto(int id) throws Exception {
-        URL url = new URL(API_BASE_URL + "/delete?id=" + id);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("DELETE");
-        connection.setRequestProperty(AUTHORIZATION_HEADER, BEARER_TOKEN);
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                return JsonParser.parseReader(br).getAsJsonObject();
-            }
-        } else {
-            throw new RuntimeException("Failed to delete product: HTTP error code : " + responseCode);
-        }
-    }
-
-    public JsonObject ativarProduto(int id) throws Exception {
-        URL url = new URL(API_BASE_URL + "/enabled");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("PUT");
-        connection.setRequestProperty(AUTHORIZATION_HEADER, BEARER_TOKEN);
-        connection.setRequestProperty(CONTENT_TYPE_HEADER, CONTENT_TYPE_JSON);
-        connection.setDoOutput(true);
-
-        JsonObject requestJson = new JsonObject();
-        requestJson.addProperty("id", id);
-
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(requestJson.toString().getBytes("UTF-8"));
-            os.flush();
-        }
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                return JsonParser.parseReader(br).getAsJsonObject();
-            }
-        } else {
-            throw new RuntimeException("Failed to enable product: HTTP error code : " + responseCode);
-        }
-    }
-
-    public static void main(String[] args) {
-        ProdutoService service = new ProdutoService();
+        String url = urlAPI + "/api/v1/produtos/list";
 
         try {
-            JsonObject produtos = service.listarProdutos(1, 100, "id", "asc");
-            System.out.println(produtos);
+            URL apiUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
+            connection.setRequestProperty("Content-Type", "application/json");
 
-            JsonObject novoProduto = new JsonObject();
-            novoProduto.addProperty("codigoBarras", "7891000100101");
-            novoProduto.addProperty("descricao", "LEITE CONDENSADO MOCA");
-            novoProduto.addProperty("precoVenda", 10);
-            novoProduto.addProperty("tipoEmbalagem", "UN");
-            novoProduto.addProperty("quantidade", 10);
-            novoProduto.addProperty("criadoEm", "2024-07-23T14:30:00");
-            novoProduto.addProperty("atualizadoEm", "2024-07-23T14:30:00");
-            novoProduto.addProperty("marca", 1);
-            novoProduto.addProperty("ativo", true);
+            JSONObject json = new JSONObject();
+            json.put("page", 1);
+            json.put("size", 100);
+            json.put("sortname", "id");
+            json.put("sortorder", "asc");
 
-            JsonObject criadoProduto = service.criarProduto(novoProduto);
-            System.out.println(criadoProduto);
+            connection.setDoOutput(true);
+            OutputStream os = connection.getOutputStream();
+            os.write(json.toString().getBytes());
+            os.flush();
+            os.close();
 
-            JsonObject deletadoProduto = service.deletarProduto(52);
-            System.out.println(deletadoProduto);
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
 
-            JsonObject ativadoProduto = service.ativarProduto(52);
-            System.out.println(ativadoProduto);
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
 
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                JSONArray produtosArray = jsonResponse.getJSONArray("content");
+                carregarProdutos(produtosArray);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao buscar produtos: Código de resposta " + responseCode);
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+        }
+    }
+
+    private void carregarProdutos(JSONArray produtosArray) {
+        tableModel.setRowCount(0);
+
+        for (int i = 0; i < produtosArray.length(); i++) {
+            JSONObject produto = produtosArray.getJSONObject(i);
+
+            Object[] row = {
+                produto.getLong("id"),
+                produto.getString("codigoBarras"),
+                produto.getString("descricao"),
+                produto.getDouble("precoVenda"),
+                produto.getString("tipoEmbalagem"),
+                produto.getDouble("quantidade"),
+                produto.getJSONObject("marca").getString("nome"),
+                produto.getBoolean("ativo")
+            };
+            tableModel.addRow(row);
+        }
+    }
+
+    private void deletarProdutoSelecionado() {
+        int selectedRow = tabelaProdutos.getSelectedRow();
+        if (selectedRow != -1) {
+            long produtoId = (long) tabelaProdutos.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja deletar o produto ID: " + produtoId + "?", "Confirmar Deleção", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                deletarProduto(produtoId);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para deletar.");
+        }
+    }
+
+    private void deletarProduto(long produtoId) {
+        String url = urlAPI + "/api/v1/produtos/delete?id=" + produtoId;
+
+        try {
+            URL apiUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                JOptionPane.showMessageDialog(this, jsonResponse.getString("message"));
+
+                tableModel.removeRow(tabelaProdutos.getSelectedRow());
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao deletar produto: " + responseCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+        }
+    }
+
+    private void editarProdutoSelecionado() {
+        int selectedRow = tabelaProdutos.getSelectedRow();
+        if (selectedRow != -1) {
+            long produtoId = (long) tabelaProdutos.getValueAt(selectedRow, 0);
+            String descricao = (String) tabelaProdutos.getValueAt(selectedRow, 2);
+            double precoVenda = (double) tabelaProdutos.getValueAt(selectedRow, 3);
+
+            String novaDescricao = JOptionPane.showInputDialog(this, "Nova Descrição:", descricao);
+            if (novaDescricao != null) {
+                String precoVendaStr = JOptionPane.showInputDialog(this, "Novo Preço de Venda:", precoVenda);
+                if (precoVendaStr != null) {
+                    atualizarProduto(produtoId, novaDescricao, Double.parseDouble(precoVendaStr));
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para editar.");
+        }
+    }
+
+    private void atualizarProduto(long produtoId, String descricao, double precoVenda) {
+        String url = urlAPI + "/api/v1/produtos/update";
+
+        try {
+            URL apiUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            JSONObject json = new JSONObject();
+            json.put("id", produtoId);
+            json.put("descricao", descricao);
+            json.put("precoVenda", precoVenda);
+
+            connection.setDoOutput(true);
+            OutputStream os = connection.getOutputStream();
+            os.write(json.toString().getBytes());
+            os.flush();
+            os.close();
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                JOptionPane.showMessageDialog(this, jsonResponse.getString("message"));
+
+                int rowIndex = tabelaProdutos.getSelectedRow();
+                tabelaProdutos.setValueAt(descricao, rowIndex, 2);
+                tabelaProdutos.setValueAt(precoVenda, rowIndex, 3);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao atualizar produto: Código de resposta " + responseCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
 }

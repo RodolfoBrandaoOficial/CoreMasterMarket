@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import static CoreMasterMarket.config.ConfigReal.GlobalToken;
 import static CoreMasterMarket.config.ConfigReal.token;
+import static CoreMasterMarket.config.ConfigReal.urlAPI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -124,7 +125,7 @@ public class VendasService extends javax.swing.JInternalFrame {
     
        System.err.println("TOKEN: " + token + "TOKENGLOBAL: " + GlobalToken);
 
-    String url = "http://localhost:8081/api/v1/vendas/listar";
+    String url = urlAPI + "/api/v1/vendas/listar";
 
     try {
         URL apiUrl = new URL(url);
@@ -235,7 +236,7 @@ private void carregarVendas(JSONArray vendasArray, String vendaId, String client
     }
 
     private void deletarVenda(long vendaId) {
-        String url = "http://localhost:8081/api/v1/vendas/delete?id=" + vendaId;
+        String url = urlAPI + "/api/v1/vendas/delete?id=" + vendaId;
 
         try {
             URL apiUrl = new URL(url);
@@ -285,7 +286,7 @@ private void carregarVendas(JSONArray vendasArray, String vendaId, String client
     }
 
     private void atualizarVenda(long vendaId, String observacao, String modoPagamento) {
-        String url = "http://localhost:8081/api/v1/vendas/update";
+        String url = urlAPI + "/api/v1/vendas/update";
 
         try {
             URL apiUrl = new URL(url);

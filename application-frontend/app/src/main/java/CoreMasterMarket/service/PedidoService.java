@@ -1,5 +1,6 @@
 package CoreMasterMarket.service;
 
+import static CoreMasterMarket.config.ConfigReal.urlAPI;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.awt.GridLayout;
@@ -16,10 +17,10 @@ import java.util.Map;
 
 public class PedidoService {
 
-    private static final String API_URL = "http://localhost:8081/api/v1/pedidos/list";
-    private static final String ADD_API_URL = "http://localhost:8081/api/v1/pedidos/add";
-    private static final String UPDATE_API_URL = "http://localhost:8081/api/v1/pedidos/update";
-    private static final String DELETE_API_URL = "http://localhost:8081/api/v1/pedidos/delete";
+    private static final String API_URL = urlAPI + "/api/v1/pedidos/list";
+    private static final String ADD_API_URL = urlAPI + "/api/v1/pedidos/add";
+    private static final String UPDATE_API_URL = urlAPI + "/api/v1/pedidos/update";
+    private static final String DELETE_API_URL = urlAPI + "/api/v1/pedidos/delete";
     private static final String AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2RvbGZvYnJhbmRhbyIsImlzcyI6ImF1dGgtYXBpIiwiZXhwIjoxNzIyNDQ4MzI5LCJ1c2VySWQiOiJkNjY1NWUwZC1hOTIxLTQ2ZTMtYjM2Ny04NzZmMDA0NjdkYWQifQ.-h-7c1XYxCzBl6z5tq-yxB99JQKe0UtmbadACp9wp3w";
     private static final String REQUEST_BODY = "{\"page\":1,\"size\":100,\"sortname\":\"id\",\"sortorder\":\"asc\"}";
 

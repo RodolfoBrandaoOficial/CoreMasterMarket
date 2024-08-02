@@ -1,220 +1,310 @@
 package CoreMasterMarket.service;
 
-import static CoreMasterMarket.config.ConfigReal.GlobalToken;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static CoreMasterMarket.config.ConfigReal.urlAPI;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Iterator;
-import okhttp3.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class ClientesService extends javax.swing.JInternalFrame {
 
-    private static final String API_URL = "http://localhost:8081/api/v1/clientes";
-    private static final OkHttpClient client = new OkHttpClient();
-    private String authToken = GlobalToken;
+    private JTable tableClientes;
+    private JButton btnListar;
+    private JButton btnHabilitar;
+    private JButton btnCriar;
+    private JButton btnAtualizar;
+    private JTextArea textAreaResponse;
+    private static final String BASE_URL = urlAPI + "/api/v1/clientes";
+    private static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2RvbGZvYnJhbmRhbyIsImlzcyI6ImF1dGgtYXBpIiwiZXhwIjoxNzIyNjk2NDExLCJ1c2VySWQiOiJkNjY1NWUwZC1hOTIxLTQ2ZTMtYjM2Ny04NzZmMDA0NjdkYWQifQ.g1QCQBNmJ3sB-ouJfjjZqMrdQuGpFYlYNLJb1j6jtAE";
 
-    private JTextField searchField;
-    private JTable clienteTable;
-    private DefaultTableModel tableModel;
-
-    public ClientesService(String authToken) {
-        this.authToken = authToken;
+    public ClientesService() {
         initComponents();
-        fetchClientes();
+        setTitle("Gerenciamento de Clientes");
+        setPreferredSize(new Dimension(920, 600)); // Define um tamanho preferido
+        pack();
     }
 
     private void initComponents() {
-        setTitle("Gestão de Clientes");
-        setSize(800, 600);
         setLayout(new BorderLayout());
 
-        JPanel topPanel = new JPanel();
-        searchField = new JTextField(20);
-        JButton searchButton = new JButton("Buscar");
-        JButton addButton = new JButton("Cadastrar");
-        JButton updateButton = new JButton("Atualizar");
-        JButton toggleButton = new JButton("Ativar/Desativar");
+        // Tabela de clientes
+        tableClientes = new JTable();
+        JScrollPane scrollPane = new JScrollPane(tableClientes);
+        add(scrollPane, BorderLayout.CENTER);
 
-        searchButton.addActionListener(e -> searchClientes());
-        addButton.addActionListener(e -> openCadastroClienteDialog());
-        updateButton.addActionListener(e -> openAtualizarClienteDialog());
-        toggleButton.addActionListener(e -> toggleClienteAtivo());
+        // Painel de botões
+        JPanel panelButtons = new JPanel();
+        panelButtons.setLayout(new GridLayout(1, 4, 10, 10)); // Organiza os botões em uma linha com espaçamento
+        btnListar = new JButton("Listar Clientes");
+        btnHabilitar = new JButton("Habilitar Cliente");
+        btnCriar = new JButton("Criar Cliente");
+        btnAtualizar = new JButton("Atualizar Cliente");
+        panelButtons.add(btnListar);
+        panelButtons.add(btnHabilitar);
+        panelButtons.add(btnCriar);
+        panelButtons.add(btnAtualizar);
+        add(panelButtons, BorderLayout.SOUTH);
 
-        topPanel.add(new JLabel("Buscar:"));
-        topPanel.add(searchField);
-        topPanel.add(searchButton);
-        topPanel.add(addButton);
-        topPanel.add(updateButton);
-        topPanel.add(toggleButton);
+        // Área de resposta
+        textAreaResponse = new JTextArea(10, 50);
+        textAreaResponse.setEditable(false);
+        JScrollPane responseScrollPane = new JScrollPane(textAreaResponse);
+        add(responseScrollPane, BorderLayout.EAST);
 
-        add(topPanel, BorderLayout.NORTH);
-
-        tableModel = new DefaultTableModel(new String[]{
-            "ID", "Nome", "Data Nascimento", "Rua", "Bairro", "Número", "CPF/CNPJ", "RG/IE",
-            "Telefone 1", "Telefone 2", "Emitir Nota", "Email", "CEP", "Cidade", "Estado",
-            "Data Cadastro", "Data Alteração", "Ativo", "Observação", "Limite Crédito",
-            "Data Pagamento", "Data Vencimento", "Data Fechamento Fatura"
-        }, 0);
-
-        clienteTable = new JTable(tableModel);
-        add(new JScrollPane(clienteTable), BorderLayout.CENTER);
-    }
-
-    private void fetchClientes() {
-        Request request = new Request.Builder()
-            .url(API_URL + "/listar")
-            .addHeader("Authorization", "Bearer " + authToken)
-            .build();
-
-        client.newCall(request).enqueue(new Callback() {
+        // Adiciona ação aos botões
+        btnListar.addActionListener(new ActionListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                SwingUtilities.invokeLater(() -> 
-                    JOptionPane.showMessageDialog(null, "Erro ao buscar clientes.")
-                );
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String jsonResponse = response.body().string();
-                    SwingUtilities.invokeLater(() -> updateTableData(jsonResponse));
-                } else {
-                    SwingUtilities.invokeLater(() -> 
-                        JOptionPane.showMessageDialog(null, "Erro ao buscar clientes.")
-                    );
-                }
+            public void actionPerformed(ActionEvent e) {
+                listarClientes();
             }
         });
+
+        btnHabilitar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                habilitarCliente();
+            }
+        });
+
+        btnCriar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                criarCliente();
+            }
+        });
+
+        btnAtualizar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                atualizarCliente();
+            }
+        });
+
+        // Permite arrastar colunas na tabela
+        tableClientes.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tableClientes.setAutoCreateRowSorter(true); // Permite ordenar por colunas
     }
 
-    private void updateTableData(String jsonResponse) {
+    private void listarClientes() {
+        String url = BASE_URL + "/listar";
+        String response = sendGetRequest(url);
+        if (response != null) {
+            JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
+            JsonArray content = jsonResponse.getAsJsonArray("content");
+            List<String[]> data = new ArrayList<>();
+            for (int i = 0; i < content.size(); i++) {
+                JsonObject cliente = content.get(i).getAsJsonObject();
+                String[] row = {
+                    cliente.get("id").getAsString(),
+                    cliente.get("nome").getAsString(),
+                    cliente.get("dataNascimento").toString(),
+                    cliente.get("rua").getAsString(),
+                    cliente.get("bairro").getAsString(),
+                    cliente.get("numero").getAsString(),
+                    cliente.get("cpfCnpj").getAsString(),
+                    cliente.get("rgIe").getAsString(),
+                    cliente.get("telefone1").getAsString(),
+                    cliente.get("telefone2").getAsString(),
+                    cliente.get("emitirNota").getAsString(),
+                    cliente.get("email").getAsString(),
+                    cliente.get("cep").getAsString(),
+                    cliente.get("cidade").getAsString(),
+                    cliente.get("estado").getAsString(),
+                    cliente.get("dataCadastro").toString(),
+                    cliente.get("dataAlteracao").toString(),
+                    cliente.get("ativo").getAsString(),
+                    cliente.get("observacao").getAsString(),
+                    cliente.get("limiteCredito").getAsString(),
+                    cliente.get("dataPagamento").toString(),
+                    cliente.get("dataVencimento").toString(),
+                    cliente.get("dataFechamentoFatura").toString()
+                };
+                data.add(row);
+            }
+
+            String[] columns = {
+                "ID", "Nome", "Data Nascimento", "Rua", "Bairro", "Número", "CPF/CNPJ", "RG/IE", "Telefone 1",
+                "Telefone 2", "Emitir Nota", "Email", "CEP", "Cidade", "Estado", "Data Cadastro", "Data Alteração",
+                "Ativo", "Observação", "Limite Crédito", "Data Pagamento", "Data Vencimento", "Data Fechamento Fatura"
+            };
+            DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[][]{}), columns);
+            tableClientes.setModel(model);
+        }
+    }
+
+    private void habilitarCliente() {
+        String id = JOptionPane.showInputDialog("Digite o ID do cliente a ser habilitado:");
+        String url = BASE_URL + "/enabled";
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("id", id);
+        String response = sendPutRequest(url, jsonRequest.toString());
+        if (response != null) {
+            textAreaResponse.setText(response);
+        }
+    }
+
+    private void criarCliente() {
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("nome", "João da Silva");
+        jsonRequest.addProperty("dataNascimento", "1990-05-15");
+        jsonRequest.addProperty("rua", "Rua Exemplo");
+        jsonRequest.addProperty("bairro", "Bairro Exemplo");
+        jsonRequest.addProperty("numero", "123");
+        jsonRequest.addProperty("cpfCnpj", "123.456.789-00");
+        jsonRequest.addProperty("rgIe", "12.345.678-9");
+        jsonRequest.addProperty("telefone1", "(11) 98765-4321");
+        jsonRequest.addProperty("telefone2", "(11) 12345-6789");
+        jsonRequest.addProperty("emitirNota", true);
+        jsonRequest.addProperty("email", "joao.silva@example.com");
+        jsonRequest.addProperty("cep", "01234-567");
+        jsonRequest.addProperty("cidade", "São Paulo");
+        jsonRequest.addProperty("estado", "SP");
+        jsonRequest.addProperty("dataAlteracao", "2024-07-23T14:30:00");
+        jsonRequest.addProperty("dataExclusao", "2024-07-23T14:30:00");
+        jsonRequest.addProperty("ativo", true);
+        jsonRequest.addProperty("observacao", "Cliente VIP");
+        jsonRequest.addProperty("limiteCredito", 5000);
+        jsonRequest.addProperty("dataPagamento", "2024-07-23T14:30:00");
+        jsonRequest.addProperty("dataVencimento", "2024-08-23T14:30:00");
+        jsonRequest.addProperty("dataFechamentoFatura", "2024-08-23T14:30:00");
+
+        String url = BASE_URL + "/create";
+        String response = sendPostRequest(url, jsonRequest.toString());
+        if (response != null) {
+            textAreaResponse.setText(response);
+        }
+    }
+
+    private void atualizarCliente() {
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("id", 1);
+        jsonRequest.addProperty("nome", "João da Silva");
+        jsonRequest.addProperty("dataNascimento", "1990-05-15");
+        jsonRequest.addProperty("rua", "Rua Exemplo");
+        jsonRequest.addProperty("bairro", "Bairro Exemplo");
+        jsonRequest.addProperty("numero", "123");
+        jsonRequest.addProperty("cpfCnpj", "123.456.789-00");
+        jsonRequest.addProperty("rgIe", "12.345.678-9");
+        jsonRequest.addProperty("telefone1", "(11) 98765-4321");
+        jsonRequest.addProperty("telefone2", "(11) 12345-6789");
+        jsonRequest.addProperty("emitirNota", true);
+        jsonRequest.addProperty("email", "joao.silva@example.com");
+        jsonRequest.addProperty("cep", "01234-567");
+        jsonRequest.addProperty("cidade", "São Paulo");
+        jsonRequest.addProperty("estado", "SP");
+        jsonRequest.addProperty("dataAlteracao", "2024-07-23T14:30:00");
+        jsonRequest.addProperty("dataExclusao", "");
+        jsonRequest.addProperty("ativo", true);
+        jsonRequest.addProperty("observacao", "Cliente VIP");
+        jsonRequest.addProperty("limiteCredito", 5000);
+        jsonRequest.addProperty("dataPagamento", "2024-07-23T14:30:00");
+        jsonRequest.addProperty("dataVencimento", "2024-08-23T14:30:00");
+        jsonRequest.addProperty("dataFechamentoFatura", "2024-08-23T14:30:00");
+
+        String url = BASE_URL + "/update";
+        String response = sendPutRequest(url, jsonRequest.toString());
+        if (response != null) {
+            textAreaResponse.setText(response);
+        }
+    }
+
+    private String sendGetRequest(String urlString) {
+        HttpURLConnection connection = null;
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            JsonNode contentNode = rootNode.path("content");
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
 
-            tableModel.setRowCount(0); // Limpa os dados da tabela
-
-            Iterator<JsonNode> elements = contentNode.elements();
-            while (elements.hasNext()) {
-                JsonNode clientNode = elements.next();
-                tableModel.addRow(new Object[]{
-                    clientNode.path("id").asInt(),
-                    clientNode.path("nome").asText(),
-                    formatData(clientNode.path("dataNascimento")),
-                    clientNode.path("rua").asText(),
-                    clientNode.path("bairro").asText(),
-                    clientNode.path("numero").asText(),
-                    clientNode.path("cpfCnpj").asText(),
-                    clientNode.path("rgIe").asText(),
-                    clientNode.path("telefone1").asText(),
-                    clientNode.path("telefone2").asText(),
-                    clientNode.path("emitirNota").asBoolean(),
-                    clientNode.path("email").asText(),
-                    clientNode.path("cep").asText(),
-                    clientNode.path("cidade").asText(),
-                    clientNode.path("estado").asText(),
-                    formatDataHora(clientNode.path("dataCadastro")),
-                    formatDataHora(clientNode.path("dataAlteracao")),
-                    clientNode.path("ativo").asBoolean(),
-                    clientNode.path("observacao").asText(),
-                    clientNode.path("limiteCredito").asDouble(),
-                    formatData(clientNode.path("dataPagamento")),
-                    formatData(clientNode.path("dataVencimento")),
-                    formatData(clientNode.path("dataFechamentoFatura"))
-                });
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                byte[] responseBytes = connection.getInputStream().readAllBytes();
+                return new String(responseBytes, StandardCharsets.UTF_8);
+            } else {
+                return "GET request failed. Response Code: " + responseCode;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro ao processar dados dos clientes.");
-        }
-    }
-
-    private String formatData(JsonNode dataNode) {
-        if (dataNode.isArray() && dataNode.size() >= 3) {
-            int year = dataNode.get(0).asInt();
-            int month = dataNode.get(1).asInt();
-            int day = dataNode.get(2).asInt();
-            return String.format("%04d-%02d-%02d", year, month, day);
-        }
-        return "";
-    }
-
-    private String formatDataHora(JsonNode dataNode) {
-        if (dataNode.isArray() && dataNode.size() >= 5) {
-            int year = dataNode.get(0).asInt();
-            int month = dataNode.get(1).asInt();
-            int day = dataNode.get(2).asInt();
-            int hour = dataNode.get(3).asInt();
-            int minute = dataNode.get(4).asInt();
-            return String.format("%04d-%02d-%02d %02d:%02d", year, month, day, hour, minute);
-        }
-        return "";
-    }
-
-    private void searchClientes() {
-        String searchQuery = searchField.getText();
-        // Implement search logic based on searchQuery
-    }
-
-    private void openCadastroClienteDialog() {
-        // Implement the logic to open a dialog for creating a new customer
-    }
-
-    private void openAtualizarClienteDialog() {
-        int selectedRow = clienteTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um cliente para atualizar.");
-            return;
-        }
-        // Implement the logic to open a dialog for updating the selected customer
-    }
-
-    private void toggleClienteAtivo() {
-        int selectedRow = clienteTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um cliente para ativar/desativar.");
-            return;
-        }
-        int clientId = (int) tableModel.getValueAt(selectedRow, 0);
-        toggleClienteAtivo(clientId);
-    }
-
-    private void toggleClienteAtivo(int clientId) {
-        String url = API_URL + "/enabled";
-        String json = "{\"id\":" + clientId + "}";
-
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
-        Request request = new Request.Builder()
-            .url(url)
-            .put(body)
-            .addHeader("Authorization", "Bearer " + authToken)
-            .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                SwingUtilities.invokeLater(() -> 
-                    JOptionPane.showMessageDialog(null, "Erro ao ativar/desativar cliente.")
-                );
+            return "Error: " + e.getMessage();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
             }
+        }
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    SwingUtilities.invokeLater(() -> fetchClientes());
-                } else {
-                    SwingUtilities.invokeLater(() -> 
-                        JOptionPane.showMessageDialog(null, "Erro ao ativar/desativar cliente.")
-                    );
-                }
+    private String sendPostRequest(String urlString, String jsonInputString) {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setDoOutput(true);
+
+            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+            connection.getOutputStream().write(input, 0, input.length);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                byte[] responseBytes = connection.getInputStream().readAllBytes();
+                return new String(responseBytes, StandardCharsets.UTF_8);
+            } else {
+                return "POST request failed. Response Code: " + responseCode;
             }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    private String sendPutRequest(String urlString, String jsonInputString) {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setDoOutput(true);
+
+            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+            connection.getOutputStream().write(input, 0, input.length);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                byte[] responseBytes = connection.getInputStream().readAllBytes();
+                return new String(responseBytes, StandardCharsets.UTF_8);
+            } else {
+                return "PUT request failed. Response Code: " + responseCode;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 }

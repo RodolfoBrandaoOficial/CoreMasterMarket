@@ -1053,7 +1053,8 @@ public class App extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel12KeyPressed
 
     private void jBtClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtClientesActionPerformed
-        ClientesService telaCardUser = new ClientesService("Painel Cliente");
+        ClientesService telaCardUser = new ClientesService();
+        telaCardUser.setTitle("Painel Cliente");
         panel1.add(telaCardUser);
         telaCardUser.setVisible(true);
     }//GEN-LAST:event_jBtClientesActionPerformed
@@ -1062,16 +1063,17 @@ public class App extends javax.swing.JFrame {
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_F1) {
             // Coloque aqui o código que você quer executar quando a tecla F3 for pressionada
             System.out.println("F3 foi pressionada!");
-            ClientesService telaCardUser = new ClientesService("Painel Cliente");
-            panel1.add(telaCardUser);
-            telaCardUser.setVisible(true);
+        ClientesService telaCardUser = new ClientesService();
+        telaCardUser.setTitle("Painel Cliente");
+        panel1.add(telaCardUser);
+        telaCardUser.setVisible(true);
         }
     }//GEN-LAST:event_jBtClientesKeyPressed
 
     private void jBtProdutossActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtProdutossActionPerformed
-            ProdutoService telaCardUser = new ProdutoService();
-            panel1.add(telaCardUser);
-            telaCardUser.setVisible(true);
+        ProdutoService telaCardUser = new ProdutoService();
+        panel1.add(telaCardUser);
+        telaCardUser.setVisible(true);
     }//GEN-LAST:event_jBtProdutossActionPerformed
 
     private void jBtProdutossKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jBtProdutossKeyPressed

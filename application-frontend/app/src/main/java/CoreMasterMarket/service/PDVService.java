@@ -23,6 +23,7 @@ import java.awt.event.KeyEvent;
 
 import CoreMasterMarket.gui.pdv.CupomFiscal;
 import static CoreMasterMarket.config.ConfigReal.token;
+import static CoreMasterMarket.config.ConfigReal.urlAPI;
 import static CoreMasterMarket.config.ConfigReal.userName;
 import java.awt.event.*;
 import java.net.URL;
@@ -203,7 +204,7 @@ public class PDVService extends javax.swing.JInternalFrame {
 
     public void carregarProdutos() {
         try {
-            URL url = new URL("http://localhost:8081/api/v1/produtos/list");
+            URL url = new URL(urlAPI + "/api/v1/produtos/list");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             System.err.println("TOKEN: " + token + "TOKENGLOBAL: " + GlobalToken + "TOEKN2" + ConfigReal.token);
@@ -376,7 +377,7 @@ public class PDVService extends javax.swing.JInternalFrame {
     private void consultarLimiteCredito() {
         // Substitua o ID do cliente e o token de autenticação conforme necessário
         int clienteId = 1; // ID do cliente
-        String url = "http://localhost:8081/api/v1/clientes/buscar/" + clienteId;
+        String url = urlAPI + "/api/v1/clientes/buscar/" + clienteId;
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(url);
             request.addHeader("Authorization", "Bearer " + GlobalToken);
@@ -428,7 +429,7 @@ public class PDVService extends javax.swing.JInternalFrame {
 
     private void consultarLimiteDisponivel() {
         try {
-            URL url = new URL("http://localhost:8081/api/v1/clientes/buscar/" + clienteId);
+            URL url = new URL(urlAPI + "/api/v1/clientes/buscar/" + clienteId);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
@@ -517,7 +518,7 @@ public class PDVService extends javax.swing.JInternalFrame {
 
     private void consultarDadosCliente() {
         try {
-            URL url = new URL("http://localhost:8081/api/v1/clientes/buscar/" + clienteId);
+            URL url = new URL(urlAPI + "/api/v1/clientes/buscar/" + clienteId);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
@@ -587,7 +588,7 @@ public class PDVService extends javax.swing.JInternalFrame {
 
     private void enviarModoPagamento(JsonObject jsonModoPagamento) {
         try {
-            URL url = new URL("http://localhost:8081/api/v1/modo-pagamento/create");
+            URL url = new URL(urlAPI + "/api/v1/modo-pagamento/create");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
@@ -644,7 +645,7 @@ public class PDVService extends javax.swing.JInternalFrame {
 
     private void enviarVenda(JsonObject jsonRequest) {
         try {
-            URL url = new URL("http://localhost:8081/api/v1/vendas/create");
+            URL url = new URL(urlAPI + "/api/v1/vendas/create");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
@@ -664,6 +665,7 @@ public class PDVService extends javax.swing.JInternalFrame {
                     while ((line = br.readLine()) != null) {
                         response.append(line.trim());
                     }
+                    System.out.println(jsonRequest);
                     JOptionPane.showMessageDialog(null, "Venda finalizada com sucesso! Resposta do servidor: " + response.toString());
                 }
             } else {
@@ -678,7 +680,7 @@ public class PDVService extends javax.swing.JInternalFrame {
 
     private void registrarModoPagamento() {
         try {
-            URL url = new URL("http://localhost:8081/api/v1/modo-pagamento/create");
+            URL url = new URL(urlAPI + "/api/v1/modo-pagamento/create");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Authorization", "Bearer " + GlobalToken);
@@ -747,7 +749,4 @@ public class PDVService extends javax.swing.JInternalFrame {
         frame.getContentPane().removeAll();
         frame.repaint();
     }
-//    public static void main(String[] args) {;
-//        SwingUtilities.invokeLater(PDVService::new);
-//    }
 }
