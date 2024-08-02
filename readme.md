@@ -118,8 +118,9 @@ docker-compose up --build
 
 1. Crie um banco de dados PostgreSQL:
 ```sql
-   CREATE DATABASE vrsoftware_db;
+   CREATE DATABASE coremastermarket;
 ```
+-- O Spring Boot jpa repository já criaram as demais tabelas.
 
 Configure o application.properties para conectar ao banco de dados:
 properties
