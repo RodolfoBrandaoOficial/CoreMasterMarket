@@ -75,6 +75,9 @@ docker-compose up --build
 - Java JpaRepository
 - Postgresql
 - Deploy ApiRestFull
+- Porta da API 8081
+- Porta do Postgresql padrão 5432
+- Usuario e senha do postgresql contidos no .env
 
 <div align="center">
 <img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/ApiRestFull.png?raw=true" width="700px" />
@@ -84,6 +87,32 @@ docker-compose up --build
 <div align="center">
 <img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/loginFrontEndFuncionalJavaSwing.png?raw=true" width="700px" />
 </div>
+
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/2.png?raw=true" width="700px" />
+</div>
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/3.png?raw=true" width="700px" />
+</div>
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/4.png?raw=true" width="700px" />
+</div>
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/5.png?raw=true" width="700px" />
+</div>
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/6.png?raw=true" width="700px" />
+</div>
+
+<div align="center">
+<img src="https://github.com/RodolfoBrandaoOficial/CoreMasterMarket/blob/main/filesGitHub/7.png?raw=true" width="700px" />
+</div>
+
 
 ### 🛠️ Configuração do Banco de Dados
 
