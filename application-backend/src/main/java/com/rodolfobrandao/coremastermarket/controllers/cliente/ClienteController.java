@@ -58,13 +58,12 @@ public class ClienteController {
 
     @PutMapping("/enabled")
     @DefaultOperation(summary = "Habilitar cliente", description = "Habilita um cliente", tags = {"Cliente"})
-    public ResponseEntity<?> habilitarCliente(@RequestBody DeleteClienteDTO deleteClienteDTO) {
+    public ResponseEntity<String> enabledById(@RequestBody DeleteClienteDTO deleteClienteDTO) {
         try {
-            clienteService.findById(deleteClienteDTO.id());
-            return ResponseEntity.ok(JsonUtil.createMessageJson("Cliente habilitado com sucesso", 200));
+            return ResponseEntity.ok(JsonUtil.createMessageJson(
+                    String.valueOf((clienteService.enabledById(deleteClienteDTO.id()).isAtivo() ? "Cliente foi Ativo com sucesso" : "Cliente Foi Desativado com Sucesso!")), 200));
         } catch (Exception ex) {
-            ErrorResponse errorResponse = new ErrorResponse("Erro ao habilitar cliente: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, System.currentTimeMillis(), 500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            throw new RuntimeException(JsonUtil.createMessageJson("Erro ao habilitar cliente: " + ex.getMessage(), 500));
         }
     }
 

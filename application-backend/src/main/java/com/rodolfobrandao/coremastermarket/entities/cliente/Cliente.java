@@ -113,6 +113,9 @@ public class Cliente {
         this.dataVencimento = dataVencimento;
         this.dataFechamentoFatura = dataFechamentoFatura;
     }
+    public Cliente(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public Cliente() {
     }

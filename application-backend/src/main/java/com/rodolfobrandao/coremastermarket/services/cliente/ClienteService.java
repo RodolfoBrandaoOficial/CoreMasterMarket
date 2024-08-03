@@ -3,7 +3,6 @@ package com.rodolfobrandao.coremastermarket.services.cliente;
 import com.rodolfobrandao.coremastermarket.dtos.cliente.CreateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.dtos.cliente.UpdateClienteItemDTO;
 import com.rodolfobrandao.coremastermarket.entities.cliente.Cliente;
-import com.rodolfobrandao.coremastermarket.entities.produto.Produto;
 import com.rodolfobrandao.coremastermarket.repositories.cliente.ClienteRepository;
 import com.rodolfobrandao.coremastermarket.specifications.GenericSpecification;
 import com.rodolfobrandao.coremastermarket.tools.JsonUtil;
@@ -27,6 +26,7 @@ public class ClienteService {
     public ClienteService(ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
+
     LocalDateTime dataAtual = LocalDateTime.now();
     LocalDateTime dataAtualTime = LocalDateTime.now();
 
@@ -90,15 +90,19 @@ public class ClienteService {
 
     public Cliente enabledById(Long id) {
         try {
-            Cliente cliente = clienteRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException(JsonUtil.createMessageJson("Cliente não encontrado", 404)));
-            cliente.setAtivo(true);
-            cliente.setDataAlteracao(dataAtual);
+            ///se o cliente estiver ativo, desativa, e se estiver desativado ative
+            Cliente cliente = clienteRepository.findById(id).get();
+            if (cliente.isAtivo()) {
+                cliente.setAtivo(false);
+            } else {
+                cliente.setAtivo(true);
+            }
             return clienteRepository.save(cliente);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception ex) {
+            throw new RuntimeException(JsonUtil.createMessageJson("Erro ao desativar cliente: " + ex.getMessage(), 500));
         }
     }
+
     /**
      * Cria um novo cliente com base nos dados fornecidos.
      *
